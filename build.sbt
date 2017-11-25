@@ -20,8 +20,6 @@ libraryDependencies ++= Seq(
   "io.warp10" % "token" % "1.0.10-29-gd8b6b0d"
 )
 
-libraryDependencies += "com.github.tyagihas" % "scala_nats_2.11" % "0.3.0"
-
 libraryDependencies += jdbc
 libraryDependencies += evolutions
 
