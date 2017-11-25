@@ -24,10 +24,8 @@ class Warp10 @Inject() (config: Config) {
 
   val qte = new QuasarTokenEncoder()
 
-  def deliverWriteToken(serviceId: String, ttl: Duration = 30.days) = {
-    val labels = Map(
-      "service_id" -> serviceId
-    ).asJava
+  def deliverWriteToken(ttl: Duration = 30.days) = {
+    val labels = Map[String,String]().asJava
 
     val writeToken = qte.deliverWriteToken(
       application,
