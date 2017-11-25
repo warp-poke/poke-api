@@ -16,13 +16,29 @@ class OrderService @Inject() (warp10: Warp10) {
     conn.publish(subject, Json.stringify(Json.toJson(msg)))
   }
 
-/*
-  def sendOrder(cs: CompleteService) = {
+  def getOrders(cs: CompleteService): Seq[Order] = {
     val CompleteService(s, eps) = cs
-    val order = Order(
-      eps.head.domain_name,
-      warp10.deliverWriteToken(s.service_id.toString),
-      eps.head.service_check
-    )
-  }*/
+    eps.flatMap(e => Seq(
+      DnsOrder(
+        labels = Map(),
+        domain_name = e.domain_name
+      ),
+      HttpOrder(
+        labels = Map(
+          "service_id" -> s.service_id.toString,
+          "endpoint_id" -> e.endpoint_id.toString,
+          "owner" -> s.owner
+        ),
+        url = e.url,
+        checks = HttpChecks(
+          latency = Some(HttpCheck(
+            class_name = "poke.http.latency"
+          )),
+          status = Some(HttpCheck(
+            class_name = "poke.http.status"
+          ))
+        )
+      )
+    ))
+  }
 }
