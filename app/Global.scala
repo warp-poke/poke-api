@@ -10,12 +10,14 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 
 import models.Scheduler
+import models.AmqpClient
 
 @Singleton
 class Global @Inject() (
   app: Application,
   actorSystem: ActorSystem,
-  scheduler: Scheduler
+  scheduler: Scheduler,
+  amqpClient: AmqpClient
   )(implicit ec: ExecutionContext) {
 
   Logger.info("ON START")
