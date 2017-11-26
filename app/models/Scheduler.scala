@@ -18,15 +18,13 @@ class Scheduler @Inject() (
   or: OrderService
 )(implicit ec: ExecutionContext) {
 
-  def httpTick() = {
+  def httpTick(amqpClient: AmqpClient) = {
     // ToDo maintain list in agent to avoid contant reloadings
     val services = sr.listAll
     services.map(s => {
       val orders = s.flatMap(or.getHttpOrders)
       val buckets = toto.bucketize(orders, 50)
-
-      // ToDo send orders to rabbit with 1 second intervals
-      println(buckets)
+      amqpClient.sendMessageAsJson("checks.http", None, buckets)
     })
   }
 
