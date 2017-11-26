@@ -32,7 +32,6 @@ class AmqpClient @Inject() (
   ): Unit = {
     val channel = connectionAndChannel._2
     val json = Json.toJson(message)
-    Logger.debug(s"Sending orders: ${json.toString}")
     val options = new BasicProperties.Builder().contentType("application/json").build
     channel.basicPublish(exchange, routingKey.getOrElse(""), options, Json.stringify(json).getBytes)
   }

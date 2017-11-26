@@ -16,13 +16,12 @@ import models.AmqpClient
 class Global @Inject() (
   app: Application,
   actorSystem: ActorSystem,
-  scheduler: Scheduler,
-  amqpClient: AmqpClient
+  scheduler: Scheduler
   )(implicit ec: ExecutionContext) {
 
   Logger.info("ON START")
   actorSystem.scheduler.schedule(10.seconds, 1.minutes) {
-    scheduler.httpTick(amqpClient)
+    scheduler.httpTick()
   }
 }
 

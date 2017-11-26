@@ -2,6 +2,10 @@ package models
 
 import javax.inject._
 import scala.concurrent.ExecutionContext
+import play.api.Logger
+import akka.actor.ActorSystem
+import scala.concurrent.duration._
+import play.api.libs.json._
 
 object toto {
   def bucketize[A](elems: Seq[A], buckets: Int): Seq[Seq[A]] = {
@@ -15,19 +19,34 @@ object toto {
 @Singleton
 class Scheduler @Inject() (
   sr: ServiceRepository,
-  or: OrderService
+  or: OrderService,
+  actorSystem: ActorSystem,
+  amqpClient: AmqpClient
 )(implicit ec: ExecutionContext) {
 
-  def httpTick(amqpClient: AmqpClient) = {
+  def httpTick() = {
     // ToDo maintain list in agent to avoid contant reloadings
     val services = sr.listAll
     services.map(s => {
       val orders = s.flatMap(or.getHttpOrders)
-      val buckets = toto.bucketize(orders, 50)
-      amqpClient.sendMessageAsJson("checks.http", None, buckets)
+      toto.bucketize(orders, 50)
+    }).map(buckets => {
+      Logger.debug(s"${buckets.length} batchs to send..")
+      sendBatch(buckets)
     })
   }
 
   def dnsTick() = {
+  }
+
+  def sendBatch[A: Writes](buckets: Seq[Seq[A]]): Unit = {
+    actorSystem.scheduler.scheduleOnce(1.seconds) {
+      amqpClient.sendMessageAsJson("checks.http", None, buckets.head)
+      if(buckets.length > 1) {
+        sendBatch(buckets.tail)
+      } else {
+        Logger.debug("All batchs sent")
+      }
+    }
   }
 }
