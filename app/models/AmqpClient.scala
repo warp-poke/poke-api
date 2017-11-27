@@ -21,6 +21,7 @@ class AmqpClient @Inject() (
     connFactory.setPort(configuration.get[Int](prefix + ".port"))
     connFactory.setUsername(configuration.get[String](prefix + ".user"))
     connFactory.setPassword(configuration.get[String](prefix + ".password"))
+    connFactory.setVirtualHost(configuration.get[String](prefix + ".virtual-host"))
     val co = connFactory.newConnection
     (co -> co.createChannel)
   }
