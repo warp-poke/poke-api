@@ -1,2 +1,7 @@
 # Routes
-GET     /warp10/writetoken          controllers.Warp10Controller.writeToken
+
+GET     /services                   controllers.ServiceController.listServices
+POST    /services                   controllers.ServiceController.createService
+GET     /services/:id               controllers.ServiceController.getService(id: java.util.UUID)
+PUT     /services                   controllers.ServiceController.updateService(id: java.util.UUID)
+DELETE  /services                   controllers.ServiceController.deleteService(id: java.util.UUID)
