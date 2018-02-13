@@ -7,8 +7,11 @@ import play.api.mvc.Results._
 import play.api.libs.json._
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 import models.MacaroonManager
+import models.entities.{User,UserInstances}
+import models.repositories.UserRepository
 
 case class AuthData(
   userId: java.util.UUID
@@ -38,15 +41,29 @@ class Auth @Inject() (
 @Singleton
 class AuthController @Inject()(
   macaroons: MacaroonManager,
+  userRepo: UserRepository,
   cc: ControllerComponents
   )(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
     case class LoginData(email: String, password: String)
     implicit val ldR = Json.reads[LoginData]
-    def login = Action(parse.json[LoginData]) { request =>
-      // TODO changeme
-      val userId = java.util.UUID.fromString("245e7009-05b5-4fb4-b15c-ed41ff123443")
-      val token = macaroons.deliverRootMacaroon(userId)
-      Ok(Json.obj("token" -> token))
+    
+    def login = Action.async(parse.json[LoginData]) { request =>
+
+      val LoginData(email, password) = request.body
+      val result = userRepo.getUserByEmail(email)
+
+      result.map(oUser => {
+        oUser match {
+          case Some(u) => {
+            if(UserInstances.verify(password, u.hashed_password)) {
+              Created(Json.obj("token" -> macaroons.deliverRootMacaroon(u.userId)))
+            } else {
+              Unauthorized
+            }
+          }
+          case None => Unauthorized
+        }
+      })
     }
 }
