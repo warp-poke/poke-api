@@ -3,8 +3,6 @@ organization := "com.clever-cloud"
 
 version := "1.0-SNAPSHOT"
 
-
-
 lazy val libAnormEntities = RootProject(uri("https://github.com/divarvel/anorm-pg-entity.git#magnolia"))
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala).dependsOn(libAnormEntities)
