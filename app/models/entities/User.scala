@@ -8,6 +8,7 @@ import pgentity.pg_entity.Entities._
 import magnolia._
 import anorm._
 import play.api.libs.json._
+import de.mkammerer.argon2._
 
 case class User(
   userId: UUID,
@@ -23,4 +24,10 @@ object UserInstances {
 
   implicit val uuidEntity = PgEntity.columnToPgEntity[UUID]("uuid")
   implicit val userEntity = PgEntity.gen[User]
+
+  def hash(password: String): String =
+    Argon2Factory.create().hash(2, 65536, 1, password.toCharArray())
+
+  def verify(password: String, hashed: String): Boolean =
+    Argon2Factory.create().verify(hashed, password)
 }
