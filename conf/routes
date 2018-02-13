@@ -1,5 +1,7 @@
 # Routes
 
+POST    /login                      controllers.AuthController.login
+
 GET     /services                   controllers.ServiceController.listServices
 POST    /services                   controllers.ServiceController.createService
 GET     /services/:id               controllers.ServiceController.getService(id: java.util.UUID)
