@@ -1,0 +1,21 @@
+export ENABLE_METRICS='true';
+export PORT='8080';
+
+export APP_SECRET='';
+
+export RABBITMQ_VIRTUAL_HOST='';
+export RABBITMQ_PORT='';
+export RABBITMQ_USER='';
+export RABBITMQ_PASSWORD='';
+export RABBITMQ_HOST='';
+
+export POSTGRESQL_ADDON_URI='';
+export POSTGRESQL_ADDON_PORT='';
+export POSTGRESQL_ADDON_HOST='';
+export POSTGRESQL_ADDON_DB='';
+export POSTGRESQL_ADDON_PASSWORD='';
+export POSTGRESQL_ADDON_USER='';
+
+export SIP_HASH_APP='';
+export SIP_HASH_TOKEN='';
+export AES_TOKEN='';
