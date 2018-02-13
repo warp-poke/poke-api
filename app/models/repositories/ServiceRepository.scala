@@ -1,5 +1,7 @@
 package models.repositories
 
+import java.util.UUID
+
 import javax.inject.Inject
 
 import anorm.SqlParser._
@@ -30,6 +32,38 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     """
     SQL(x)
       .as((parser[Service]() ~ parser[Check]()).*)
+      .map({ case (s ~ e) => s -> e})
+      .groupBy(_._1)
+      .map({ case (s, vs) => CompleteService(s, vs.map(_._2))})
+      .toList
+  })(ec)
+
+  def list(userId: UUID): Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
+    var query = s"""
+      select ${columnList[Service](None)},
+             ${columnList[HttpCheck](None)}
+      from ${tableName[Service]}
+      inner join ${tableName[HttpCheck]} using(service_id)
+      where user_id = ${userId.toString}
+    """
+    SQL(query)
+      .as((parser[Service]() ~ parser[HttpCheck]()).*)
+      .map({ case (s ~ e) => s -> e})
+      .groupBy(_._1)
+      .map({ case (s, vs) => CompleteService(s, vs.map(_._2))})
+      .toList
+  })(ec)
+
+  def get(serviceId: UUID): Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
+    var query = s"""
+      select ${columnList[Service](None)},
+             ${columnList[HttpCheck](None)}
+      from ${tableName[Service]}
+      inner join ${tableName[HttpCheck]} using(service_id)
+      where service_id = ${serviceId.toString}
+    """
+    SQL(query)
+      .as((parser[Service]() ~ parser[HttpCheck]()).*)
       .map({ case (s ~ e) => s -> e})
       .groupBy(_._1)
       .map({ case (s, vs) => CompleteService(s, vs.map(_._2))})
