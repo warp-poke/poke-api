@@ -14,9 +14,9 @@ class OrderService @Inject() (warp10: Warp10) {
     eps.flatMap(e => Seq(
       HttpOrder(
         labels = Map(
-          "service_id" -> s.serviceId.toString,
-          "endpoint_id" -> e.checkId.toString,
-          "owner" -> s.userId.toString
+          "service_id" -> s.service_id.toString,
+          "endpoint_id" -> e.check_id.toString,
+          "owner" -> s.user_id.toString
         ),
         url = s.domain,
         checks = HttpChecks(

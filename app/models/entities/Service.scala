@@ -10,17 +10,17 @@ import anorm._
 import play.api.libs.json._
 
 case class Service(
-  serviceId: UUID,
-  userId: UUID,
+  service_id: UUID,
+  user_id: UUID,
   domain: String//,
   //createdAt: OffsetDateTime,
   //updatedAt: OffsetDateTime,
   //deletedAt: Option[OffsetDateTime]
 )
 
-case class HttpCheck(
-  checkId: UUID,
-  serviceId: UUID,
+case class Check(
+  check_id: UUID,
+  service_id: UUID,
   path: String//,
   //headers: Map[String,String],
   //createdAt: OffsetDateTime,
@@ -30,14 +30,14 @@ case class HttpCheck(
 
 case class CompleteService(
   service: Service,
-  checks: Seq[HttpCheck]
+  checks: Seq[Check]
 )
 
 object ServiceInstances {
-  implicit val checkWrites = Json.writes[HttpCheck]
+  implicit val checkWrites = Json.writes[Check]
   implicit val serviceWrites = Json.writes[Service]
 
   implicit val uuidEntity = PgEntity.columnToPgEntity[UUID]("uuid")
-  implicit val httpCheckEntity = PgEntity.gen[HttpCheck]
+  implicit val httpCheckEntity = PgEntity.gen[Check]
   implicit val serviceEntity = PgEntity.gen[Service]
 }
