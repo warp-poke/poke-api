@@ -41,13 +41,13 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def list(userId: UUID): Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
     var query = s"""
       select ${columnList[Service](None)},
-             ${columnList[HttpCheck](None)}
+             ${columnList[Check](None)}
       from ${tableName[Service]}
-      inner join ${tableName[HttpCheck]} using(service_id)
+      inner join ${tableName[Check]} using(service_id)
       where user_id = ${userId.toString}
     """
     SQL(query)
-      .as((parser[Service]() ~ parser[HttpCheck]()).*)
+      .as((parser[Service]() ~ parser[Check]()).*)
       .map({ case (s ~ e) => s -> e})
       .groupBy(_._1)
       .map({ case (s, vs) => CompleteService(s, vs.map(_._2))})
@@ -57,13 +57,13 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def get(serviceId: UUID): Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
     var query = s"""
       select ${columnList[Service](None)},
-             ${columnList[HttpCheck](None)}
+             ${columnList[Check](None)}
       from ${tableName[Service]}
-      inner join ${tableName[HttpCheck]} using(service_id)
+      inner join ${tableName[Check]} using(service_id)
       where service_id = ${serviceId.toString}
     """
     SQL(query)
-      .as((parser[Service]() ~ parser[HttpCheck]()).*)
+      .as((parser[Service]() ~ parser[Check]()).*)
       .map({ case (s ~ e) => s -> e})
       .groupBy(_._1)
       .map({ case (s, vs) => CompleteService(s, vs.map(_._2))})
