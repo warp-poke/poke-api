@@ -17,9 +17,8 @@ object Auth {
     Some(AuthData(java.util.UUID.fromString("245e7009-05b5-4fb4-b15c-ed41ff123443")))
   }
 
-  def withUser[A](
-    f: => AuthData => Request[A] => Result,
-    parser: BodyParser[A] 
+  def withUser[A](parser: BodyParser[A])(
+    f: => AuthData => Request[A] => Result
   ) = {
    Authenticated(extractUser, _ => Unauthorized) { user =>
      Action(parser)(request => f(user)(request))
