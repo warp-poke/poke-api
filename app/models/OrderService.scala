@@ -4,7 +4,8 @@ package models
 import javax.inject._
 import play.api.libs.json._
 
-import service._
+import models.entities._
+import models.orders._
 
 
 class OrderService @Inject() (warp10: Warp10) {
@@ -13,16 +14,16 @@ class OrderService @Inject() (warp10: Warp10) {
     eps.flatMap(e => Seq(
       HttpOrder(
         labels = Map(
-          "service_id" -> s.service_id.toString,
-          "endpoint_id" -> e.endpoint_id.toString,
-          "owner" -> s.owner
+          "service_id" -> s.serviceId.toString,
+          "endpoint_id" -> e.checkId.toString,
+          "owner" -> s.userId.toString
         ),
-        url = e.url,
+        url = s.domain,
         checks = HttpChecks(
-          latency = Some(HttpCheck(
+          latency = Some(HttpCheckOrder(
             class_name = "poke.http.latency"
           )),
-          status = Some(HttpCheck(
+          status = Some(HttpCheckOrder(
             class_name = "poke.http.status"
           ))
         )

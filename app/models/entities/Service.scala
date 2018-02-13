@@ -28,6 +28,11 @@ case class HttpCheck(
   //deletedAt: Option[OffsetDateTime]
 )
 
+case class CompleteService(
+  service: Service,
+  checks: Seq[HttpCheck]
+)
+
 object ServiceInstances {
   implicit val checkWrites = Json.writes[HttpCheck]
   implicit val serviceWrites = Json.writes[Service]

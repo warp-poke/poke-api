@@ -1,16 +1,15 @@
-package models
+package models.orders
 
 import play.api.libs.json._
-import models.service._
 
-case class HttpCheck(
+case class HttpCheckOrder(
   class_name: String,
   labels: Option[Map[String,String]] = None
 )
 
 case class HttpChecks(
-  latency: Option[HttpCheck],
-  status:  Option[HttpCheck]
+  latency: Option[HttpCheckOrder],
+  status:  Option[HttpCheckOrder]
 )
 
 sealed trait Order
@@ -27,7 +26,7 @@ case class DnsOrder(
 ) extends  Order
 
 object Order {
-  implicit val httpCheckFormat = Json.format[HttpCheck]
+  implicit val httpCheckFormat = Json.format[HttpCheckOrder]
   implicit val httpChecksFormat = Json.format[HttpChecks]
 
   val httpOrderFormat = Json.format[HttpOrder]

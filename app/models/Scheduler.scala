@@ -7,6 +7,8 @@ import akka.actor.ActorSystem
 import scala.concurrent.duration._
 import play.api.libs.json._
 
+import models.repositories.ServiceRepository
+
 object toto {
   def bucketize[A](elems: Seq[A], buckets: Int): Seq[Seq[A]] = {
     elems.zipWithIndex
