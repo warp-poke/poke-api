@@ -21,7 +21,7 @@ class Global @Inject() (
 
   Logger.info("ON START")
   actorSystem.scheduler.schedule(10.seconds, 1.minutes) {
-    scheduler.httpTick()
+    //scheduler.httpTick()
   }
 }
 
