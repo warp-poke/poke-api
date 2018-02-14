@@ -28,15 +28,14 @@ class Scheduler @Inject() (
   sr: ServiceRepository,
   or: OrderService,
   actorSystem: ActorSystem,
-  amqpClient: AmqpClient,
   conf: Configuration
 )(implicit ec: ExecutionContext) {
-
+/*
   val producer = KafkaProducer(Conf(
     new StringSerializer(),
     new StringSerializer(),
     bootstrapServers = conf.get[String]("kafka.bootstrap.servers")
-  ))
+  ))*/
   val httpTopic = conf.get[String]("kafka.httpchecks.topic")
 
   def httpTick() = {

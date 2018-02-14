@@ -10,6 +10,15 @@ export POSTGRESQL_ADDON_DB='';
 export POSTGRESQL_ADDON_PASSWORD='';
 export POSTGRESQL_ADDON_USER='';
 
-export SIP_HASH_APP='';
-export SIP_HASH_TOKEN='';
-export AES_TOKEN='';
+export KAFKA_HOST='';
+export KAFKA_HTTPCHECKS_TOPIC='';
+
+export WARP_APP='';
+export WARP_OWNER='';
+export WARP_SIP_HASH_APP='';
+export WARP_SIP_HASH_TOKEN='';
+export WARP_AES_TOKEN='';
+export WARP_ENDPOINT='';
+
+export WARP_READ_TOKEN='';
+export WARP_WRITE_TOKEN='';

@@ -5,6 +5,7 @@ import javax.inject._
 import play.api.Configuration
 
 case class Warp10Config(
+  endpoint: String,
   owner_id: UUID,
   app_name: String,
   sip_hash_app: String,
@@ -16,6 +17,7 @@ case class Warp10Config(
 class Config @Inject() (val configuration: Configuration) {
 
   val warp10 = Warp10Config(
+    endpoint = getString("warp10.endpoint"),
     owner_id = getUuid("warp10.owner_id"),
     app_name = getString("warp10.app_name"),
     sip_hash_app = getString("warp10.sip_hash_app"),
