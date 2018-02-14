@@ -6,6 +6,11 @@ import play.api.Logger
 import akka.actor.ActorSystem
 import scala.concurrent.duration._
 import play.api.libs.json._
+import play.api.Configuration
+import cakesolutions.kafka.KafkaProducer
+import cakesolutions.kafka.KafkaProducer.Conf
+import cakesolutions.kafka.KafkaProducerRecord
+import org.apache.kafka.common.serialization.StringSerializer
 
 import models.repositories.ServiceRepository
 
@@ -23,8 +28,16 @@ class Scheduler @Inject() (
   sr: ServiceRepository,
   or: OrderService,
   actorSystem: ActorSystem,
-  amqpClient: AmqpClient
+  amqpClient: AmqpClient,
+  conf: Configuration
 )(implicit ec: ExecutionContext) {
+
+  val producer = KafkaProducer(Conf(
+    new StringSerializer(),
+    new StringSerializer(),
+    bootstrapServers = conf.get[String]("kafka.bootstrap.servers")
+  ))
+  val httpTopic = conf.get[String]("kafka.httpchecks.topic")
 
   def httpTick() = {
     // ToDo maintain list in agent to avoid contant reloadings
@@ -43,7 +56,10 @@ class Scheduler @Inject() (
 
   def sendBatch[A: Writes](buckets: Seq[Seq[A]]): Unit = {
     actorSystem.scheduler.scheduleOnce(1.seconds) {
-      amqpClient.sendMessageAsJson("checks.http", None, buckets.head)
+      producer.send(KafkaProducerRecord[String, String](
+        httpTopic,
+        Json.toJson(buckets.head).toString)
+      )
       if(buckets.length > 1) {
         sendBatch(buckets.tail)
       } else {
