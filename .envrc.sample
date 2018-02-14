@@ -3,12 +3,6 @@ export PORT='8080';
 
 export APP_SECRET='';
 
-export RABBITMQ_VIRTUAL_HOST='';
-export RABBITMQ_PORT='';
-export RABBITMQ_USER='';
-export RABBITMQ_PASSWORD='';
-export RABBITMQ_HOST='';
-
 export POSTGRESQL_ADDON_URI='';
 export POSTGRESQL_ADDON_PORT='';
 export POSTGRESQL_ADDON_HOST='';

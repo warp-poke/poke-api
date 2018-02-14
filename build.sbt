@@ -24,7 +24,6 @@ libraryDependencies ++= Seq(
 
 libraryDependencies += jdbc
 libraryDependencies += evolutions
-libraryDependencies += "com.rabbitmq" % "amqp-client" % "3.5.4"
 
 // Adds additional packages into Twirl
 // TwirlKeys.templateImports += "com.clever-cloud.controllers._"
