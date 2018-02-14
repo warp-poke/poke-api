@@ -39,7 +39,9 @@ class ServiceController @Inject()(
     }
 
     def updateService(id: ServiceId) = authed.async(parse.json[ServiceCreationData]) { request =>
-      Future.successful(NotImplemented)
+      serviceRepo
+        .update(request.auth.userId, id, request.body)
+        .map({ cs => Ok(Json.toJson(cs)) })
     }
 
     def getService(id: ServiceId) = authed.async { request =>
