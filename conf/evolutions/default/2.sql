@@ -1,8 +1,8 @@
 
 # --- !Ups
 
-alter table if not exists only "check" add column protocol boolean;
+alter table only "check" add column secure boolean;
 
 # --- !Downs
 
-alter table if exists only "check" drop column protocol;
+alter table if exists only "check" drop column secure;
