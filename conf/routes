@@ -1,18 +1,14 @@
 # Routes
 
-+ nocsrf
 POST    /login                      controllers.AuthController.login
-+ nocsrf
+
 POST    /register                   controllers.AuthController.register
 
 GET     /token                      controllers.TokenController.getReadToken
 
 GET     /services                   controllers.ServiceController.listServices
-+ nocsrf
 POST    /services                   controllers.ServiceController.createService
 GET     /services/:id               controllers.ServiceController.getService(id: ServiceId)
-+ nocsrf
 PUT     /services/:id               controllers.ServiceController.updateService(id: ServiceId)
-+ nocsrf
 DELETE  /services/:id               controllers.ServiceController.deleteService(id: ServiceId)
 
