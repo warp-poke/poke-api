@@ -25,6 +25,9 @@ class Config @Inject() (val configuration: Configuration) {
     aes_token = getString("warp10.aes_token")
   )
 
+  val temporaryTokensDeleteMe =
+    (getString("warp10.temporary.read"), getString("warp10.temporary.write"))
+
   val macaroonsSecret = getString("macaroons.secret")
 
   private def getUuid(path: String): UUID = {
