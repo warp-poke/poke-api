@@ -17,24 +17,37 @@ case class AuthData(
   userId: java.util.UUID
 )
 
-class Auth @Inject() (
-  macaroons: MacaroonManager
-) {
-  def extractUser(rh: RequestHeader): Option[AuthData] = {
-    for {
-      authHeader <- rh.headers.get("Authorization")
-      if authHeader.startsWith("Bearer ")
-      macaroon = authHeader.drop(7)
-      userId <- macaroons.checkMacaroon(macaroon)
-    } yield AuthData(userId = userId)
-  }
+case class AuthRequest[A](
+  auth: AuthData,
+  request: Request[A]
+) extends WrappedRequest(request)
 
-  def withUser[A](parser: BodyParser[A])(
-    f: => AuthData => Request[A] => Result
-  ) = {
-   Authenticated(extractUser, _ => Unauthorized) { user =>
-     Action(parser)(request => f(user)(request))
-   }
+
+class Authenticated @Inject() (
+    cc: ControllerComponents,
+    macaroons: MacaroonManager
+  ) extends ActionBuilder[AuthRequest,AnyContent] with ActionRefiner[Request, WrappedRequest] {
+  private def extractMacaroon(request: Request[Any]): Option[AuthData] = for {
+    authHeader <- request.headers.get("Authorization")
+    if authHeader.startsWith("Bearer ")
+    macaroon = authHeader.drop(7)
+    userId <- macaroons.checkMacaroon(macaroon)
+  } yield AuthData(userId = userId)
+  def executionContext: ExecutionContext = cc.executionContext
+  def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+  implicit val ec = executionContext
+  def invokeBlock[A](r: Request[A], block: AuthRequest[A] => Future[Result]) = {
+    refine(r).flatMap({
+      case Left(r) => Future.successful(r)
+      case Right(wr) => block(wr)
+    })
+  }
+  def refine[A](request: Request[A]): Future[Either[Result,AuthRequest[A]]] = {
+    val result = extractMacaroon(request)
+
+    result
+      .map(data => Future.successful(Right(AuthRequest(data, request))))
+      .getOrElse(Future.successful(Left(Unauthorized)))
   }
 }
 
@@ -47,7 +60,7 @@ class AuthController @Inject()(
 
     case class LoginData(email: String, password: String)
     implicit val ldR = Json.reads[LoginData]
-    
+
     def login = Action.async(parse.json[LoginData]) { request =>
 
       val LoginData(email, password) = request.body
@@ -57,7 +70,7 @@ class AuthController @Inject()(
         oUser match {
           case Some(u) => {
             if(UserInstances.verify(password, u.hashed_password)) {
-              Created(Json.obj("token" -> macaroons.deliverRootMacaroon(u.userId)))
+              Created(Json.obj("token" -> macaroons.deliverRootMacaroon(u.user_id)))
             } else {
               Unauthorized
             }

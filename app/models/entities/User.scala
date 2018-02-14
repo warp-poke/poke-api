@@ -11,7 +11,7 @@ import play.api.libs.json._
 import de.mkammerer.argon2._
 
 case class User(
-  userId: UUID,
+  user_id: UUID,
   email: String,
   hashed_password: String//,
   //createdAt: OffsetDateTime,

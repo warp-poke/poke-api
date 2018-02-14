@@ -1,9 +1,12 @@
 # Routes
 
++ nocsrf
 POST    /login                      controllers.AuthController.login
-
 GET     /services                   controllers.ServiceController.listServices
++ nocsrf
 POST    /services                   controllers.ServiceController.createService
 GET     /services/:id               controllers.ServiceController.getService(id: java.util.UUID)
++ nocsrf
 PUT     /services                   controllers.ServiceController.updateService(id: java.util.UUID)
++ nocsrf
 DELETE  /services                   controllers.ServiceController.deleteService(id: java.util.UUID)
