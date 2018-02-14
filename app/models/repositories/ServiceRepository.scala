@@ -70,4 +70,13 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
       .toList
   })(ec)
 
+  def delete(serviceId: UUID): Future[Unit] = Future(db.withConnection { implicit connection =>
+    var query = s"""
+      delete from ${tableName[Service]}
+      where service_id = ${serviceId.toString}
+    """
+    SQL(query)
+    ()
+  })(ec)
+
 }
