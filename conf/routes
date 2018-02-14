@@ -7,6 +7,7 @@ GET     /services                   controllers.ServiceController.listServices
 POST    /services                   controllers.ServiceController.createService
 GET     /services/:id               controllers.ServiceController.getService(id: java.util.UUID)
 + nocsrf
-PUT     /services                   controllers.ServiceController.updateService(id: java.util.UUID)
+PUT     /services/:id               controllers.ServiceController.updateService(id: java.util.UUID)
 + nocsrf
-DELETE  /services                   controllers.ServiceController.deleteService(id: java.util.UUID)
+DELETE  /services/:id               controllers.ServiceController.deleteService(id: java.util.UUID)
+
