@@ -1,5 +1,4 @@
 # Routes
-+import models.entities.Service.ServiceId
 
 + nocsrf POST    /login                      controllers.AuthController.login
          GET     /services                   controllers.ServiceController.listServices
