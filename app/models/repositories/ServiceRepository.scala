@@ -99,12 +99,22 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     CompleteService(service, checks)
   })(ec)
 
-  def delete(serviceId: ServiceId, userId: UserId): Future[Unit] = Future(db.withConnection { implicit connection =>
-    var query = s"""
+  def delete(serviceId: ServiceId, userId: UserId): Future[Unit] = Future(db.withTransaction { implicit connection =>
+    val deleteChecksQuery = s"""
+      delete from "${tableName[Check]}"
+      where service_id = {serviceId}::uuid and user_id = {userId}::uuid
+    """
+    SQL(deleteChecksQuery)
+      .on(
+        'serviceId -> serviceId.toString,
+        'userId -> userId.toString
+      )
+      .execute()
+    val deleteServiceQuery = s"""
       delete from ${tableName[Service]}
       where service_id = {serviceId}::uuid and user_id = {userId}::uuid
     """
-    SQL(query)
+    SQL(deleteServiceQuery)
       .on(
         'serviceId -> serviceId.toString,
         'userId -> userId.toString
