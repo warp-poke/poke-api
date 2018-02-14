@@ -8,6 +8,10 @@ import play.api.libs.json._
 
 import models.entities.Service.ServiceId
 import models.entities.ServiceInstances.completeServiceWrites
+
+import models.http.ServiceCreationData
+import models.http.ServiceCreationDataInstances._
+
 import models.repositories.ServiceRepository
 
 @Singleton
@@ -23,15 +27,14 @@ class ServiceController @Inject()(
         .map(x => Ok(r.auth.toString))
     }
 
-    case class ServiceCreationData(toto: String)
-    implicit val scdFormats = Json.format[ServiceCreationData]
-
     def createService = authed.async(parse.json[ServiceCreationData]) { implicit request =>
-      Future.successful(NotImplemented)
+      serviceRepo
+        .create(request.auth.userId, request.body)
+        .map({ cs => Created(Json.toJson(cs)) })
     }
 
-    def updateService(id: ServiceId) = authed(parse.json[ServiceCreationData]) { request =>
-      NotImplemented
+    def updateService(id: ServiceId) = authed.async(parse.json[ServiceCreationData]) { request =>
+      Future.successful(NotImplemented)
     }
 
     def getService(id: ServiceId) = authed.async { request =>

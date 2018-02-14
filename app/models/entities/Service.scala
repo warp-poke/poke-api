@@ -39,6 +39,6 @@ object ServiceInstances {
   implicit val completeServiceWrites = Json.writes[CompleteService]
 
   implicit val uuidEntity = PgEntity.columnToPgEntity[UUID]("uuid")
-  implicit val httpCheckEntity = PgEntity.gen[Check]
+  implicit val checkEntity = PgEntity.gen[Check]
   implicit val serviceEntity = PgEntity.gen[Service]
 }
