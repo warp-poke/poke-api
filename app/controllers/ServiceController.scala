@@ -6,6 +6,7 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json._
 
+import models.entities.ServiceInstances._
 import models.repositories.ServiceRepository
 
 @Singleton
@@ -32,8 +33,10 @@ class ServiceController @Inject()(
       NotImplemented
     }
 
-    def getService(id: ServiceId) = authed { request =>
-      NotImplemented
+    def getService(id: ServiceId) = authed.async { implicit request =>
+      serviceRepo
+        .get(id)
+        .map({ service => Ok(Json.toJson(service)) })
     }
 
     def deleteService(id: ServiceId) = authed { request =>
