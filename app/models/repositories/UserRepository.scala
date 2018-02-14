@@ -21,6 +21,17 @@ class UserRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExecuti
 
   private val userColumns = columns[User].map(c => s""""${tableName[User]}".${c.name}""").mkString(",")
 
+  def createUser(user: User): Future[Unit] = Future(db.withConnection { implicit connection =>
+    val x = insertSQL[User]
+    SQL(x)
+      .on(
+        'user_id -> user.user_id,
+        'email -> user.email,
+        'hashed_password -> user.hashed_password)
+      .execute()
+    ()
+  })(ec)
+
   def getUserByEmail(email: String): Future[Option[User]] = Future(db.withConnection { implicit connection =>
     val x = s"""
       select ${userColumns}

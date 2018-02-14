@@ -2,6 +2,8 @@
 
 + nocsrf
 POST    /login                      controllers.AuthController.login
++ nocsrf
+POST    /register                   controllers.AuthController.register
 GET     /services                   controllers.ServiceController.listServices
 + nocsrf
 POST    /services                   controllers.ServiceController.createService

@@ -18,6 +18,12 @@ case class User(
 
 object User {
   type UserId = UUID
+
+  def hash(password: String): String =
+    Argon2Factory.create().hash(2, 65536, 1, password.toCharArray())
+
+  def verify(password: String, hashed: String): Boolean =
+    Argon2Factory.create().verify(hashed, password)
 }
 
 object UserInstances {
@@ -25,10 +31,4 @@ object UserInstances {
 
   implicit val uuidEntity = PgEntity.columnToPgEntity[UUID]("uuid")
   implicit val userEntity = PgEntity.gen[User]
-
-  def hash(password: String): String =
-    Argon2Factory.create().hash(2, 65536, 1, password.toCharArray())
-
-  def verify(password: String, hashed: String): Boolean =
-    Argon2Factory.create().verify(hashed, password)
 }

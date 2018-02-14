@@ -6,6 +6,7 @@ import play.api.mvc.Security._
 import play.api.mvc.Results._
 import play.api.libs.json._
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
@@ -69,7 +70,7 @@ class AuthController @Inject()(
       result.map(oUser => {
         oUser match {
           case Some(u) => {
-            if(UserInstances.verify(password, u.hashed_password)) {
+            if(User.verify(password, u.hashed_password)) {
               Created(Json.obj("token" -> macaroons.deliverRootMacaroon(u.user_id)))
             } else {
               Unauthorized
@@ -77,6 +78,18 @@ class AuthController @Inject()(
           }
           case None => Unauthorized
         }
+      })
+    }
+
+    def register = Action.async(parse.json[LoginData]) { request =>
+      val user = User(
+        user_id = UUID.randomUUID,
+        email = request.body.email,
+        hashed_password = User.hash(request.body.password)
+      )
+
+      userRepo.createUser(user).map(_ => {
+        Created
       })
     }
 }
