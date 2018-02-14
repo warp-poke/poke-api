@@ -26,15 +26,15 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def listAll: Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
     val x = s"""
       select ${columnList[Service](None)},
-             ${columnList[Check](None)}
+             ${checkColumns}
       from "${tableName[Service]}"
       inner join "${tableName[Check]}" using(service_id)
     """
     SQL(x)
       .as((parser[Service]() ~ parser[Check]()).*)
-      .map({ case (s ~ e) => s -> e })
+      .map({ case (s ~ e) => s -> e})
       .groupBy(_._1)
-      .map({ case (s, vs) => CompleteService(s, vs.map(_._2)) })
+      .map({ case (s, vs) => CompleteService(s, vs.map(_._2))})
       .toList
   })(ec)
 

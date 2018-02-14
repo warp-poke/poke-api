@@ -29,7 +29,6 @@ case class CompleteService(
 object ServiceInstances {
   implicit val checkWrites = Json.writes[Check]
   implicit val serviceWrites = Json.writes[Service]
-  implicit val completeServiceWrites = Json.writes[CompleteService]
 
   implicit val uuidEntity = PgEntity.columnToPgEntity[UUID]("uuid")
   implicit val httpCheckEntity = PgEntity.gen[Check]
