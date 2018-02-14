@@ -1,16 +1,18 @@
 package models
 
 import javax.inject._
-import java.util.UUID
 import scala.util.Try
+import java.util.UUID
 
 import com.github.nitram509.jmacaroons.{MacaroonsBuilder, MacaroonsVerifier}
+
+import models.entities.User.UserId
 
 
 class MacaroonManager @Inject() (
   config: Config
 ) {
-  def deliverRootMacaroon(userId: UUID): String = {
+  def deliverRootMacaroon(userId: UserId): String = {
     MacaroonsBuilder.create(
       "https://example.org",
       config.macaroonsSecret,
@@ -18,7 +20,7 @@ class MacaroonManager @Inject() (
     ).serialize
   }
 
-  def checkMacaroon(serializedMacaroon: String): Option[UUID] = {
+  def checkMacaroon(serializedMacaroon: String): Option[UserId] = {
     val macaroon = MacaroonsBuilder.deserialize(serializedMacaroon)
     val verifier = new MacaroonsVerifier(macaroon)
 

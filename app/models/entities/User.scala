@@ -11,10 +11,14 @@ import play.api.libs.json._
 import de.mkammerer.argon2._
 
 case class User(
-  user_id: UUID,
+  user_id: User.UserId,
   email: String,
   hashed_password: String
 )
+
+object User {
+  type UserId = UUID
+}
 
 object UserInstances {
   implicit val userWrites = Json.writes[User]
