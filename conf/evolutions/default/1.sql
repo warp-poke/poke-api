@@ -17,7 +17,7 @@ create table if not exists "service" (
 create table if not exists "check" (
     check_id       uuid primary key,
     service_id     uuid not null,
-    path           character varying (2048)
+    path           character varying (2048) not null
 );
 
 alter table only "service" add constraint user_user_id_fkey foreign key (user_id) references "user"(user_id);
