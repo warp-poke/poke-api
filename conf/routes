@@ -4,6 +4,9 @@
 POST    /login                      controllers.AuthController.login
 + nocsrf
 POST    /register                   controllers.AuthController.register
+
+GET     /token                      controllers.TokenController.getReadToken
+
 GET     /services                   controllers.ServiceController.listServices
 + nocsrf
 POST    /services                   controllers.ServiceController.createService

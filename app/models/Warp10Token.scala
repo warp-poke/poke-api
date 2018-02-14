@@ -10,7 +10,9 @@ import io.warp10.quasar.token.thrift.data.TokenType;
 
 import javax.inject.Inject
 
-import scala.concurrent.duration._;
+import scala.concurrent.duration._
+
+import models.entities.User.UserId
 
 class Warp10 @Inject() (config: Config) {
   val warp10OwnerId = config.warp10.owner_id
@@ -23,6 +25,8 @@ class Warp10 @Inject() (config: Config) {
   keyStore.setKey(KeyStore.AES_TOKEN,     keyStore.decodeKey(config.warp10.aes_token))
 
   val qte = new QuasarTokenEncoder()
+
+  def deliverReadToken(userId: UserId) = config.temporaryTokensDeleteMe._1
 
   def deliverWriteToken(ttl: Duration = 30.days) = {
     val labels = Map[String,String]().asJava
