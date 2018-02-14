@@ -8,26 +8,24 @@ import models.entities._
 import models.orders._
 
 
-class OrderService @Inject() (warp10: Warp10) {
-  def getHttpOrders(cs: CompleteService): Seq[HttpOrder] = {
-    val CompleteService(s, eps) = cs
-    eps.flatMap(e => Seq(
-      HttpOrder(
-        labels = Map(
-          "service_id" -> s.service_id.toString,
-          "endpoint_id" -> e.check_id.toString,
-          "owner" -> s.user_id.toString
-        ),
-        url = s.domain,
-        checks = HttpChecks(
-          latency = Some(HttpCheckOrder(
-            class_name = "poke.http.latency"
-          )),
-          status = Some(HttpCheckOrder(
-            class_name = "poke.http.status"
-          ))
-        )
-      )
-    ))
+class OrderService @Inject() (config: Config, warp10: Warp10) {
+  def checkToOrder(service: Service)(check: Check): Order = {
+    val labels = Map(
+      "service_id" -> service.service_id.toString,
+      "check_id" -> check.check_id.toString,
+      "owner_id" -> service.user_id.toString
+    )
+
+    val token = warp10.deliverWriteToken(labels)
+
+    HttpOrder(
+      url = s"http://${service.domain}${check.path}",
+      warp10_endpoint = config.warp10.endpoint,
+      token = token
+    )
+  }
+  def getOrders(cs: CompleteService): Seq[Order] = {
+    val CompleteService(service, checks) = cs
+    checks.map(checkToOrder(service))
   }
 }

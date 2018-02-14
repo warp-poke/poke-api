@@ -42,7 +42,7 @@ class Scheduler @Inject() (
     // ToDo maintain list in agent to avoid contant reloadings
     val services = sr.listAll
     services.map(s => {
-      val orders = s.flatMap(or.getHttpOrders)
+      val orders = s.flatMap(or.getOrders)
       toto.bucketize(orders, 50)
     }).map(buckets => {
       Logger.debug(s"${buckets.length} batchs to send..")

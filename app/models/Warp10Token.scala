@@ -28,18 +28,5 @@ class Warp10 @Inject() (config: Config) {
 
   def deliverReadToken(userId: UserId) = config.temporaryTokensDeleteMe._1
 
-  def deliverWriteToken(ttl: Duration = 30.days) = {
-    val labels = Map[String,String]().asJava
-
-    val writeToken = qte.deliverWriteToken(
-      application,
-      warp10OwnerId.toString,
-      producerId.toString,
-      labels,
-      ttl.toMillis,
-      keyStore
-    )
-
-    writeToken
-  }
+  def deliverWriteToken(labels: Map[String,String]) = config.temporaryTokensDeleteMe._2
 }
