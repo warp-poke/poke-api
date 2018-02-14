@@ -49,8 +49,8 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
       select ${columnList[Service](None)},
              ${checkColumns}
       from ${tableName[Service]}
-      inner join ${tableName[Check]} using(service_id)
-      where user_id = {userId}
+      inner join "${tableName[Check]}" using(service_id)
+      where user_id = {userId}::uuid
     """
     gatherResults(
       SQL(query)
@@ -66,8 +66,8 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
       select ${columnList[Service](None)},
              ${checkColumns}
       from ${tableName[Service]}
-      inner join ${tableName[Check]} using(service_id)
-      where service_id = {serviceId} and user_id = {userId}
+      inner join "${tableName[Check]}" using(service_id)
+      where service_id = {serviceId}::uuid and user_id = {userId}::uuid
     """
     gatherResults(
       SQL(query)
@@ -102,7 +102,7 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def delete(serviceId: ServiceId, userId: UserId): Future[Unit] = Future(db.withConnection { implicit connection =>
     var query = s"""
       delete from ${tableName[Service]}
-      where service_id = {serviceId} and user_id = {userId}
+      where service_id = {serviceId}::uuid and user_id = {userId}::uuid
     """
     SQL(query)
       .on(
