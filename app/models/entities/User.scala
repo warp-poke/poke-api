@@ -13,10 +13,7 @@ import de.mkammerer.argon2._
 case class User(
   user_id: UUID,
   email: String,
-  hashed_password: String//,
-  //createdAt: OffsetDateTime,
-  //updatedAt: OffsetDateTime,
-  //deletedAt: Option[OffsetDateTime]
+  hashed_password: String
 )
 
 object UserInstances {

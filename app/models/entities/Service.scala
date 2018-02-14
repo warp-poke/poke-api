@@ -12,20 +12,13 @@ import play.api.libs.json._
 case class Service(
   service_id: UUID,
   user_id: UUID,
-  domain: String//,
-  //createdAt: OffsetDateTime,
-  //updatedAt: OffsetDateTime,
-  //deletedAt: Option[OffsetDateTime]
+  domain: String
 )
 
 case class Check(
   check_id: UUID,
   service_id: UUID,
-  path: String//,
-  //headers: Map[String,String],
-  //createdAt: OffsetDateTime,
-  //updatedAt: OffsetDateTime,
-  //deletedAt: Option[OffsetDateTime]
+  path: String
 )
 
 case class CompleteService(
