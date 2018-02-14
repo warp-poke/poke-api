@@ -6,6 +6,7 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json._
 
+import models.entities.Service.ServiceId
 import models.entities.ServiceInstances.completeServiceWrites
 import models.repositories.ServiceRepository
 
@@ -22,7 +23,6 @@ class ServiceController @Inject()(
         .map(x => Ok(r.auth.toString))
     }
 
-    type ServiceId = java.util.UUID
     case class ServiceCreationData(toto: String)
     implicit val scdFormats = Json.format[ServiceCreationData]
 

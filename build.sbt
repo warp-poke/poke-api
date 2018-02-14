@@ -30,7 +30,7 @@ libraryDependencies += "com.rabbitmq" % "amqp-client" % "3.5.4"
 // TwirlKeys.templateImports += "com.clever-cloud.controllers._"
 
 // Adds additional packages into conf/routes
-// play.sbt.routes.RoutesKeys.routesImport += "com.clever-cloud.binders._"
+play.sbt.routes.RoutesKeys.routesImport += "models.entities.Service._"
 
 resolvers += "cityzendata-bintray" at "http://dl.bintray.com/cityzendata/maven"
 resolvers += "hbs-bintray" at "http://dl.bintray.com/hbs/maven"

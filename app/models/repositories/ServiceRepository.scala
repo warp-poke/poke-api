@@ -13,6 +13,8 @@ import pgentity.pg_entity._
 import pgentity.pg_entity.Entities._
 
 import models.entities.{Check,Service,CompleteService}
+import models.entities.User._
+import models.entities.Service._
 import models.entities.ServiceInstances._
 
 
@@ -44,7 +46,7 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     gatherResults(SQL(x).as(completeParser.*))
   })(ec)
 
-  def list(userId: UUID): Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
+  def list(userId: UserId): Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
     var query = s"""
       select ${columnList[Service](None)},
              ${checkColumns}
@@ -61,7 +63,7 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     )
   })(ec)
 
-  def get(serviceId: UUID, userId: UUID): Future[Option[CompleteService]] = Future(db.withConnection { implicit connection =>
+  def get(serviceId: ServiceId, userId: UserId): Future[Option[CompleteService]] = Future(db.withConnection { implicit connection =>
     var query = s"""
       select ${columnList[Service](None)},
              ${checkColumns}
@@ -79,7 +81,7 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     ).headOption
   })(ec)
 
-  def delete(serviceId: UUID, userId: UUID): Future[Unit] = Future(db.withConnection { implicit connection =>
+  def delete(serviceId: ServiceId, userId: UserId): Future[Unit] = Future(db.withConnection { implicit connection =>
     var query = s"""
       delete from ${tableName[Service]}
       where service_id = {serviceId} and user_id = {userId}

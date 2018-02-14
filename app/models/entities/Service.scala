@@ -9,15 +9,17 @@ import magnolia._
 import anorm._
 import play.api.libs.json._
 
+import models.entities.User.UserId
+
 case class Service(
-  service_id: UUID,
-  user_id: UUID,
+  service_id: Service.ServiceId,
+  user_id: UserId,
   domain: String
 )
 
 case class Check(
-  check_id: UUID,
-  service_id: UUID,
+  check_id: Service.CheckId,
+  service_id: Service.ServiceId,
   path: String
 )
 
@@ -25,6 +27,11 @@ case class CompleteService(
   service: Service,
   checks: Seq[Check]
 )
+
+object Service {
+  type CheckId = UUID
+  type ServiceId = UUID
+}
 
 object ServiceInstances {
   implicit val checkWrites = Json.writes[Check]
