@@ -82,7 +82,7 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def create(userId: UserId, data: ServiceCreationData): Future[CompleteService] = Future(db.withTransaction { implicit connection =>
     val serviceId = UUID.randomUUID()
     val service = Service(serviceId, userId, data.domain)
-    val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.path) })
+    val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.secure, check.path) })
 
     SQL(insertSQL[Service](serviceEntity)).on(
       'service_id -> service.service_id,
@@ -91,9 +91,10 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     ).execute()
 
     checks.foreach(check => SQL(insertSQL[Check](checkEntity)).on(
-      'check_id -> check.check_id,
+      'check_id   -> check.check_id,
       'service_id -> check.service_id,
-      'path -> check.path
+      'path       -> check.path,
+      'secure     -> check.secure
     ).execute())
 
     CompleteService(service, checks)

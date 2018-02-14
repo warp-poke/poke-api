@@ -1,14 +1,19 @@
 package models.entities
 
-import java.time.OffsetDateTime
 import java.util.UUID
+import java.time.OffsetDateTime
+
+import anorm._
+import anorm.SqlParser._
 
 import pgentity.pg_entity._
 import pgentity.pg_entity.Entities._
+
 import magnolia._
-import anorm._
+
 import play.api.libs.json._
 
+import models.enums._
 import models.entities.User.UserId
 
 case class Service(
@@ -20,6 +25,7 @@ case class Service(
 case class Check(
   check_id: Service.CheckId,
   service_id: Service.ServiceId,
+  secure: Boolean,
   path: String
 )
 
@@ -39,6 +45,7 @@ object ServiceInstances {
   implicit val completeServiceWrites = Json.writes[CompleteService]
 
   implicit val uuidEntity = PgEntity.columnToPgEntity[UUID]("uuid")
+  implicit val booleanEntity = PgEntity.columnToPgEntity[Boolean]("boolean")
   implicit val checkEntity = PgEntity.gen[Check]
   implicit val serviceEntity = PgEntity.gen[Service]
 }
