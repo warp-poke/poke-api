@@ -37,7 +37,7 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def listAll: Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
     val x = s"""
       select ${columnList[Service](None)},
-             ${checkColumns}
+             ${columnList[Check](None)}
       from "${tableName[Service]}"
       inner join "${tableName[Check]}" using(service_id)
     """
@@ -47,7 +47,7 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def list(userId: UserId): Future[Seq[CompleteService]] = Future(db.withConnection { implicit connection =>
     var query = s"""
       select ${columnList[Service](None)},
-             ${checkColumns}
+             ${columnList[Check](None)}
       from ${tableName[Service]}
       inner join "${tableName[Check]}" using(service_id)
       where user_id = {userId}::uuid
@@ -64,7 +64,7 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def get(serviceId: ServiceId, userId: UserId): Future[Option[CompleteService]] = Future(db.withConnection { implicit connection =>
     var query = s"""
       select ${columnList[Service](None)},
-             ${checkColumns}
+             ${columnList[Check](None)}
       from ${tableName[Service]}
       inner join "${tableName[Check]}" using(service_id)
       where service_id = {serviceId}::uuid and user_id = {userId}::uuid
