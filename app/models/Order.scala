@@ -5,6 +5,7 @@ import play.api.libs.json._
 sealed trait Order
 
 case class HttpOrder(
+  domain_name: String,
   url: String,
   warp10_endpoint: String,
   token: String
