@@ -9,6 +9,8 @@ import play.api.libs.json._
 import models.entities.Service.ServiceId
 import models.entities.ServiceInstances.completeServiceWrites
 
+import models.http.PaginatedService
+import models.http.PaginatedServiceInstances._
 import models.http.ServiceCreationData
 import models.http.ServiceCreationDataInstances._
 
@@ -24,7 +26,10 @@ class ServiceController @Inject()(
     def listServices = authed.async { r =>
       serviceRepo
         .list(r.auth.userId)
-        .map(x => Ok(r.auth.toString))
+        .map(cs => {
+          val paginated = PaginatedService(cs)
+          Ok(Json.toJson(paginated))
+        })
     }
 
     def createService = authed.async(parse.json[ServiceCreationData]) { implicit request =>
