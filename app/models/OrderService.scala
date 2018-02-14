@@ -18,9 +18,10 @@ class OrderService @Inject() (config: Config, warp10: Warp10) {
 
     val token = warp10.deliverWriteToken(labels)
 
+    val scheme = if(check.secure) "https" else "http"
     HttpOrder(
       domain_name = service.domain,
-      url = s"http://${service.domain}${check.path}",
+      url = s"${scheme}://${service.domain}${check.path}",
       warp10_endpoint = config.warp10.endpoint,
       token = token
     )
