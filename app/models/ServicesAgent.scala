@@ -30,10 +30,11 @@ class ServicesAgent @Inject() () extends Actor {
 }
 
 object ServicesAgent {
-  case object GetAllServices
-  case class SetAllServices(services: Seq[CompleteService])
-  case class AllServices(services: Map[ServiceId, CompleteService])
-  case class AddService(service: CompleteService)
-  case class UpdateService(service: CompleteService)
-  case class RemoveService(serviceId: ServiceId)
+  sealed trait ServicesAgentMessage
+  case object   GetAllServices                                                extends ServicesAgentMessage
+  case class    SetAllServices(services: Seq[CompleteService])                extends ServicesAgentMessage
+  case class    AllServices(services: Map[ServiceId, CompleteService])        extends ServicesAgentMessage
+  case class    AddService(service: CompleteService)                          extends ServicesAgentMessage
+  case class    UpdateService(service: CompleteService)                       extends ServicesAgentMessage
+  case class    RemoveService(serviceId: ServiceId)                           extends ServicesAgentMessage
 }
