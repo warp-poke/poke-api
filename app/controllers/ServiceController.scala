@@ -5,6 +5,7 @@ import play.api._
 import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json._
+import akka.actor.ActorRef
 
 import models.entities.Service.ServiceId
 import models.entities.ServiceInstances.completeServiceWrites
@@ -15,12 +16,14 @@ import models.http.ServiceCreationData
 import models.http.ServiceCreationDataInstances._
 
 import models.repositories.ServiceRepository
+import models.ServicesAgent._
 
 @Singleton
 class ServiceController @Inject()(
   authed: Authenticated,
   serviceRepo: ServiceRepository,
-  cc: ControllerComponents
+  cc: ControllerComponents,
+  @Named("services-state") servicesState: ActorRef
   )(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
     def listServices = authed.async { r =>
@@ -35,7 +38,10 @@ class ServiceController @Inject()(
     def createService = authed.async(parse.json[ServiceCreationData]) { implicit request =>
       serviceRepo
         .create(request.auth.userId, request.body)
-        .map({ cs => Created(Json.toJson(cs)) })
+        .map({ cs =>
+          servicesState ! AddService(cs)
+          Created(Json.toJson(cs))
+        })
     }
 
     def updateService(id: ServiceId) = authed.async(parse.json[ServiceCreationData]) { request =>
@@ -56,6 +62,9 @@ class ServiceController @Inject()(
     def deleteService(id: ServiceId) = authed.async { request =>
       serviceRepo
         .delete(id, request.auth.userId)
-        .map(_ => NoContent)
+        .map(_ => {
+          servicesState ! RemoveService(id)
+          NoContent
+        })
     }
 }

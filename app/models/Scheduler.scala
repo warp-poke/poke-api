@@ -3,7 +3,7 @@ package models
 import javax.inject._
 import scala.concurrent.ExecutionContext
 import play.api.Logger
-import akka.actor.ActorSystem
+import akka.actor.{Actor, ActorRef, ActorSystem}
 import scala.concurrent.duration._
 import play.api.libs.json._
 import play.api.Configuration
@@ -13,6 +13,8 @@ import cakesolutions.kafka.KafkaProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 
 import models.repositories.ServiceRepository
+import models.ServicesAgent._
+import models.entities.CompleteService
 
 object toto {
   def bucketize[A](elems: Seq[A], buckets: Int): Seq[Seq[A]] = {
@@ -28,8 +30,11 @@ class Scheduler @Inject() (
   sr: ServiceRepository,
   or: OrderService,
   actorSystem: ActorSystem,
-  conf: Configuration
-)(implicit ec: ExecutionContext) {
+  conf: Configuration,
+  @Named("services-state") servicesState: ActorRef
+)(implicit ec: ExecutionContext) extends Actor {
+
+  import Scheduler._
 
   val producer = KafkaProducer(Conf(
     new StringSerializer(),
@@ -38,16 +43,18 @@ class Scheduler @Inject() (
   ))
   val httpTopic = conf.get[String]("kafka.httpchecks.topic")
 
-  def httpTick() = {
-    // ToDo maintain list in agent to avoid contant reloadings
-    val services = sr.listAll
-    services.map(s => {
-      val orders = s.flatMap(or.getOrders)
-      toto.bucketize(orders, 50)
-    }).map(buckets => {
-      Logger.debug(s"${buckets.length} batchs to send..")
-      sendBatch(buckets)
-    })
+  def receive = {
+    case HttpTick => httpTick()
+    case AllServices(services) => handleHttpChecks(services.toList.map(_._2))
+  }
+
+  def httpTick() = servicesState ! GetAllServices
+
+  def handleHttpChecks(services: List[CompleteService]) = {
+    val orders = services.flatMap(or.getOrders)
+    val buckets = toto.bucketize(orders, 50)
+    Logger.debug(s"${buckets.length} batchs to send..")
+    sendBatch(buckets)
   }
 
   def dnsTick() = {
@@ -66,4 +73,8 @@ class Scheduler @Inject() (
       }
     }
   }
+}
+
+object Scheduler {
+  case object HttpTick
 }
