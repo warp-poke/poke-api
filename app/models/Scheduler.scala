@@ -37,9 +37,13 @@ class Scheduler @Inject() (
   import Scheduler._
 
   val producer = KafkaProducer(Conf(
+    props = Map(
+      "bootstrap.servers" -> conf.get[String]("kafka.bootstrap.servers"),
+      "security.protocol" -> conf.get[String]("kafka.security.protocol"),
+      "sasl.mechanism" -> "PLAIN"
+    ),
     new StringSerializer(),
-    new StringSerializer(),
-    bootstrapServers = conf.get[String]("kafka.bootstrap.servers")
+    new StringSerializer()
   ))
   val httpTopic = conf.get[String]("kafka.httpchecks.topic")
 
