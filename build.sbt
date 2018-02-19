@@ -22,7 +22,9 @@ libraryDependencies ++= Seq(
   "net.cakesolutions" %% "scala-kafka-client-akka" % "1.0.0"
 )
 
-javaOptions += "-Djava.security.auth.login.config=conf/kafkacreds.jaas"
+javaOptions += "-Djava.security.auth.login.config=${JAAS_PATH}"
+
+javaOptions in Universal += "-Djava.security.auth.login.config=" + sys.env.get("JAAS_PATH").getOrElse("conf/kafkacreds.jaas")
 
 libraryDependencies += jdbc
 libraryDependencies += evolutions
