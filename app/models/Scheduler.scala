@@ -66,9 +66,11 @@ class Scheduler @Inject() (
 
   def sendBatch[A: Writes](buckets: Seq[Seq[A]]): Unit = {
     actorSystem.scheduler.scheduleOnce(1.seconds) {
-      producer.send(KafkaProducerRecord[String, String](
-        httpTopic,
-        Json.toJson(buckets.head).toString)
+      buckets.head.foreach(msg =>
+        producer.send(KafkaProducerRecord[String, String](
+          httpTopic,
+          Json.toJson(msg).toString)
+        )
       )
       if(buckets.length > 1) {
         sendBatch(buckets.tail)
