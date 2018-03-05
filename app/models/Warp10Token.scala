@@ -26,7 +26,25 @@ class Warp10 @Inject() (config: Config) {
 
   val qte = new QuasarTokenEncoder()
 
-  def deliverReadToken(userId: UserId) = config.temporaryTokensDeleteMe._1
+  def deliverReadToken(userId: UserId) = {
+    qte.deliverReadToken(
+      application,
+      warp10OwnerId.toString,
+      producerId.toString,
+      List(application).asJava,
+      1.hours.toMillis,
+      keyStore
+)
+  }
 
-  def deliverWriteToken(labels: Map[String,String]) = config.temporaryTokensDeleteMe._2
+  def deliverWriteToken(labels: Map[String,String]) = {
+    qte.deliverWriteToken(
+      application,
+      warp10OwnerId.toString,
+      producerId.toString,
+      labels.asJava,
+      5.minutes.toMillis,
+      keyStore
+    )
+  }
 }
