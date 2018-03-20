@@ -16,7 +16,7 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "anorm" % "2.5.3",
   "org.postgresql" % "postgresql" % "42.1.4",
-  "io.warp10" % "token" % "1.0.10-29-gd8b6b0d",
+  "io.warp10" % "token" % "1.2.11",
   "com.github.nitram509" % "jmacaroons" % "0.3.1",
   "de.mkammerer" % "argon2-jvm" % "2.3",
   "net.cakesolutions" %% "scala-kafka-client-akka" % "1.0.0"

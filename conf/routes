@@ -6,9 +6,10 @@ POST    /register                   controllers.AuthController.register
 
 GET     /token                      controllers.TokenController.getReadToken
 
+GET     /internal/readtoken         controllers.TokenController.getInternalReadToken
+
 GET     /services                   controllers.ServiceController.listServices
 POST    /services                   controllers.ServiceController.createService
 GET     /services/:id               controllers.ServiceController.getService(id: ServiceId)
 PUT     /services/:id               controllers.ServiceController.updateService(id: ServiceId)
 DELETE  /services/:id               controllers.ServiceController.deleteService(id: ServiceId)
-

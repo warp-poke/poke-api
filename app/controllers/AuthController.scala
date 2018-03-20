@@ -5,6 +5,7 @@ import play.api.mvc._
 import play.api.mvc.Security._
 import play.api.mvc.Results._
 import play.api.libs.json._
+import play.api.Configuration
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext
@@ -49,6 +50,20 @@ class Authenticated @Inject() (
     result
       .map(data => Future.successful(Right(AuthRequest(data, request))))
       .getOrElse(Future.successful(Left(Unauthorized)))
+  }
+}
+
+class InternalAuthenticated @Inject() (
+  cc: ControllerComponents,
+  conf: Configuration
+) extends ActionBuilder[Request, AnyContent] {
+  def executionContext: ExecutionContext = cc.executionContext
+  def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+  implicit val ec = executionContext
+  def invokeBlock[A](r: Request[A], block: Request[A] => Future[Result]) = {
+    if(r.headers.get("Authorization") == Some(conf.get[String]("auth.internal.token"))) {
+      block(r)
+    } else Future(Forbidden)
   }
 }
 
