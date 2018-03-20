@@ -2,6 +2,7 @@ package actors
 
 import javax.inject._
 import play.api.Configuration
+import play.api.libs.json._
 import akka.actor._
 import cakesolutions.kafka.KafkaProducer
 import cakesolutions.kafka.KafkaProducer.Conf
@@ -29,10 +30,9 @@ class KafkaProducerActor @Inject() (
   ))
 
   def send(order: Order, topic: String): Unit = {
-    println(s"Would have send $order to $topic")
-    /*producer.send(KafkaProducerRecord[String, String](
+    producer.send(KafkaProducerRecord[String, String](
       topic,
       Json.toJson(order).toString
-    ))*/
+    ))
   }
 }
