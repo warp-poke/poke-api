@@ -26,7 +26,7 @@ class OrderService @Inject() (config: Config, warp10: Warp10) {
       token = token
     )
   }
-  def getOrders(cs: CompleteService): Seq[Order] = {
+  def getHttpOrders(cs: CompleteService): Seq[Order] = {
     val CompleteService(service, checks) = cs
     checks.map(checkToOrder(service))
   }

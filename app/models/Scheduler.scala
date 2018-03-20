@@ -2,19 +2,18 @@ package models
 
 import javax.inject._
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
 import play.api.Logger
 import akka.actor.{Actor, ActorRef, ActorSystem}
 import scala.concurrent.duration._
 import play.api.libs.json._
 import play.api.Configuration
-import cakesolutions.kafka.KafkaProducer
-import cakesolutions.kafka.KafkaProducer.Conf
-import cakesolutions.kafka.KafkaProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 
 import models.repositories.ServiceRepository
 import models.ServicesAgent._
 import models.entities.CompleteService
+import models.entities.ActorMessages._
 
 object toto {
   def bucketize[A](elems: Seq[A], buckets: Int): Seq[Seq[A]] = {
@@ -31,20 +30,12 @@ class Scheduler @Inject() (
   or: OrderService,
   actorSystem: ActorSystem,
   conf: Configuration,
-  @Named("services-state") servicesState: ActorRef
+  @Named("services-state") servicesState: ActorRef,
+  @Named("scheduling-actor") schedulingActor: ActorRef
 )(implicit ec: ExecutionContext) extends Actor {
 
   import Scheduler._
 
-  val producer = KafkaProducer(Conf(
-    props = Map(
-      "bootstrap.servers" -> conf.get[String]("kafka.bootstrap.servers"),
-      "security.protocol" -> conf.get[String]("kafka.security.protocol"),
-      "sasl.mechanism" -> "PLAIN"
-    ),
-    new StringSerializer(),
-    new StringSerializer()
-  ))
   val httpTopic = conf.get[String]("kafka.httpchecks.topic")
 
   def receive = {
@@ -55,30 +46,15 @@ class Scheduler @Inject() (
   def httpTick() = servicesState ! GetAllServices
 
   def handleHttpChecks(services: List[CompleteService]) = {
-    val orders = services.flatMap(or.getOrders)
+    val orders = services.flatMap(or.getHttpOrders)
     val buckets = toto.bucketize(orders, 50)
     Logger.debug(s"${buckets.length} batchs to send..")
-    sendBatch(buckets)
+    schedulingActor ! OrderBuckets(buckets, httpTopic, 1.second)
   }
 
   def dnsTick() = {
   }
 
-  def sendBatch[A: Writes](buckets: Seq[Seq[A]]): Unit = {
-    actorSystem.scheduler.scheduleOnce(1.seconds) {
-      buckets.head.foreach(msg =>
-        producer.send(KafkaProducerRecord[String, String](
-          httpTopic,
-          Json.toJson(msg).toString)
-        )
-      )
-      if(buckets.length > 1) {
-        sendBatch(buckets.tail)
-      } else {
-        Logger.debug("All batchs sent")
-      }
-    }
-  }
 }
 
 object Scheduler {

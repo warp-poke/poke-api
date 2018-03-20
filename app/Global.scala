@@ -14,6 +14,7 @@ import models.Scheduler
 import models.Scheduler.HttpTick
 import models.ServicesAgent
 import models.repositories.ServiceRepository
+import actors._
 
 @Singleton
 class Global @Inject() (
@@ -41,6 +42,8 @@ class GlobalModule extends AbstractModule with AkkaGuiceSupport {
   def configure() = {
     bindActor[ServicesAgent]("services-state")
     bindActor[Scheduler]("scheduler")
+    bindActor[SchedulingActor]("scheduling-actor")
+    bindActor[KafkaProducerActor]("kafka-producer")
     bind(classOf[Global]).asEagerSingleton
   }
 }
