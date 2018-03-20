@@ -15,8 +15,7 @@ import scala.concurrent.duration._
 import models.entities.User.UserId
 
 class Warp10 @Inject() (config: Config) {
-  val warp10OwnerId = config.warp10.owner_id
-  val producerId = warp10OwnerId
+  val producerId = config.warp10.producer_id
   val application = config.warp10.app_name
 
   private val keyStore: KeyStore = new DummyKeyStore()
@@ -29,18 +28,18 @@ class Warp10 @Inject() (config: Config) {
   def deliverReadToken(userId: UserId) = {
     qte.deliverReadToken(
       application,
-      warp10OwnerId.toString,
+      userId.toString,
       producerId.toString,
       List(application).asJava,
-      1.hours.toMillis,
+      48.hours.toMillis,
       keyStore
-)
+    )
   }
 
-  def deliverWriteToken(labels: Map[String,String]) = {
+  def deliverWriteToken(labels: Map[String,String], userId: UserId) = {
     qte.deliverWriteToken(
       application,
-      warp10OwnerId.toString,
+      userId.toString,
       producerId.toString,
       labels.asJava,
       5.minutes.toMillis,

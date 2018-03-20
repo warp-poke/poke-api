@@ -16,7 +16,7 @@ class OrderService @Inject() (config: Config, warp10: Warp10) {
       "owner_id" -> service.user_id.toString
     )
 
-    val token = warp10.deliverWriteToken(labels)
+    val token = warp10.deliverWriteToken(labels, service.user_id)
 
     val scheme = if(check.secure) "https" else "http"
     HttpOrder(
