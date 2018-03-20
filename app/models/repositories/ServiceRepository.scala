@@ -81,8 +81,8 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
 
   def create(userId: UserId, data: ServiceCreationData): Future[CompleteService] = Future(db.withTransaction { implicit connection =>
     val serviceId = UUID.randomUUID()
-    val service = Service(serviceId, userId, data.domain)
-    val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.secure, check.path) })
+    val service = Service(serviceId, userId, data.domain, data.name)
+    val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.secure, check.path, check.name) })
 
     SQL(insertSQL[Service](serviceEntity)).on(
       'service_id -> service.service_id,
@@ -101,8 +101,8 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   })(ec)
 
   def update(userId: UserId, serviceId: ServiceId, data: ServiceCreationData): Future[CompleteService] = Future(db.withTransaction { implicit connection =>
-    val service = Service(serviceId, userId, data.domain)
-    val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.secure, check.path) })
+    val service = Service(serviceId, userId, data.domain, data.name)
+    val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.secure, check.path, check.name) })
     val deleteChecksQuery = s"""
       delete from "${tableName[Check]}"
       where service_id = {serviceId}::uuid

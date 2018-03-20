@@ -19,14 +19,16 @@ import models.entities.User.UserId
 case class Service(
   service_id: Service.ServiceId,
   user_id: UserId,
-  domain: String
+  domain: String,
+  name: Option[String]
 )
 
 case class Check(
   check_id: Service.CheckId,
   service_id: Service.ServiceId,
   secure: Boolean,
-  path: String
+  path: String,
+  name: Option[String]
 )
 
 case class CompleteService(
@@ -44,6 +46,7 @@ object ServiceInstances {
   implicit val serviceWrites = Json.writes[Service]
   implicit val completeServiceWrites = Json.writes[CompleteService]
 
+  implicit val optionStringEntity = PgEntity.columnToPgEntity[Option[String]]("text")
   implicit val uuidEntity = PgEntity.columnToPgEntity[UUID]("uuid")
   implicit val booleanEntity = PgEntity.columnToPgEntity[Boolean]("boolean")
   implicit val checkEntity = PgEntity.gen[Check]
