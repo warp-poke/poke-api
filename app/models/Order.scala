@@ -29,9 +29,14 @@ case class SSLOrder(
 
 object Order {
   val httpOrderFormat = Json.format[HttpOrder]
+  val sslOrderFormat = Json.format[SSLOrder]
+  val dnsOrderFormat = Json.format[DNSOrder]
+
   implicit val orderWrites = new Writes[Order] {
     def writes(o: Order) = o match {
-      case ho: HttpOrder => httpOrderFormat.writes(ho)
+      case httpOrder: HttpOrder => httpOrderFormat.writes(httpOrder)
+      case sslOrder: SSLOrder => sslOrderFormat.writes(sslOrder)
+      case dnsOrder: DNSOrder => dnsOrderFormat.writes(dnsOrder)
     }
   }
 }

@@ -26,6 +26,7 @@ case class Service(
 case class Check(
   check_id: Service.CheckId,
   service_id: Service.ServiceId,
+  kind: String,
   secure: Boolean,
   path: String,
   name: Option[String]
@@ -42,6 +43,8 @@ object Service {
 }
 
 object ServiceInstances {
+  val CheckKinds = Seq[String]("http", "dns")
+
   implicit val checkWrites = Json.writes[Check]
   implicit val serviceWrites = Json.writes[Service]
   implicit val completeServiceWrites = Json.writes[CompleteService]

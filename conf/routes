@@ -8,6 +8,8 @@ GET     /token                      controllers.TokenController.getReadToken
 
 GET     /internal/readtoken         controllers.TokenController.getInternalReadToken
 
+GET     /services/kinds             controllers.ServiceController.listKinds
+
 GET     /services                   controllers.ServiceController.listServices
 POST    /services                   controllers.ServiceController.createService
 GET     /services/:id               controllers.ServiceController.getService(id: ServiceId)

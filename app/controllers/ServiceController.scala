@@ -8,7 +8,7 @@ import play.api.libs.json._
 import akka.actor.ActorRef
 
 import models.entities.Service.ServiceId
-import models.entities.ServiceInstances.completeServiceWrites
+import models.entities.ServiceInstances.{completeServiceWrites,CheckKinds}
 
 import models.http.PaginatedService
 import models.http.PaginatedServiceInstances._
@@ -25,6 +25,10 @@ class ServiceController @Inject()(
   cc: ControllerComponents,
   @Named("services-state") servicesState: ActorRef
   )(implicit ec: ExecutionContext) extends AbstractController(cc) {
+
+    def listKinds = Action { request  =>
+      Ok(Json.toJson(CheckKinds))
+    }
 
     def listServices = authed.async { r =>
       serviceRepo
