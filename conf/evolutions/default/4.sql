@@ -2,7 +2,7 @@
 
 create table hook(
   id uuid primary key not null,
-  user uuid not null,
+  "user" uuid not null,
   label text not null,
   webhook text not null
 );
