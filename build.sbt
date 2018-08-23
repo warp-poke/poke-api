@@ -33,6 +33,8 @@ libraryDependencies += evolutions
 
 // Adds additional packages into conf/routes
 play.sbt.routes.RoutesKeys.routesImport += "models.entities.Service._"
+play.sbt.routes.RoutesKeys.routesImport += "models.entities.User._"
+play.sbt.routes.RoutesKeys.routesImport += "models.entities.Hook._"
 
 resolvers += "cityzendata-bintray" at "http://dl.bintray.com/cityzendata/maven"
 resolvers += "hbs-bintray" at "http://dl.bintray.com/hbs/maven"

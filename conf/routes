@@ -6,7 +6,13 @@ POST    /register                   controllers.AuthController.register
 
 GET     /token                      controllers.TokenController.getReadToken
 
-GET     /internal/readtoken         controllers.TokenController.getInternalReadToken
+GET     /internal/readtoken            controllers.TokenController.getInternalReadToken
+GET     /internal/users/:user_id/hooks controllers.HookController.listHooksInternalAuth(user_id: UserId)
+
+GET     /users/:user_id/hooks       controllers.HookController.listHooks(user_id: UserId)
+POST    /hooks                      controllers.HookController.createHook
+PUT     /hooks/:hook_id             controllers.HookController.updateHook(hook_id: HookId)
+DELETE  /hooks/:hook_id             controllers.HookController.deleteHook(hook_id: HookId)
 
 GET     /services                   controllers.ServiceController.listServices
 POST    /services                   controllers.ServiceController.createService
