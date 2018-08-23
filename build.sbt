@@ -3,11 +3,9 @@ organization := "com.clever-cloud"
 
 version := "1.0-SNAPSHOT"
 
-lazy val libAnormEntities = RootProject(uri("https://github.com/divarvel/anorm-pg-entity.git#warp-poke"))
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala).dependsOn(libAnormEntities)
-
-scalaVersion := "2.11.3"
+scalaVersion := "2.12.6"
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
@@ -19,7 +17,8 @@ libraryDependencies ++= Seq(
   "io.warp10" % "token" % "1.2.11",
   "com.github.nitram509" % "jmacaroons" % "0.3.1",
   "de.mkammerer" % "argon2-jvm" % "2.3",
-  "net.cakesolutions" %% "scala-kafka-client-akka" % "1.0.0"
+  "net.cakesolutions" %% "scala-kafka-client-akka" % "1.0.0",
+  "name.delafargue" %% "anorm-pg-entity" % "0.1.0-SNAPSHOT"
 )
 
 javaOptions += "-Djava.security.auth.login.config=conf/kafkacreds.jaas"
@@ -38,3 +37,4 @@ play.sbt.routes.RoutesKeys.routesImport += "models.entities.Service._"
 resolvers += "cityzendata-bintray" at "http://dl.bintray.com/cityzendata/maven"
 resolvers += "hbs-bintray" at "http://dl.bintray.com/hbs/maven"
 resolvers += Resolver.bintrayRepo("cakesolutions", "maven")
+resolvers += "Clever Cloud Maven" at "http://maven.clever-cloud.com"

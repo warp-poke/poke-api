@@ -8,7 +8,6 @@ import play.api.db.DBApi
 
 import scala.concurrent.Future
 import pgentity.pg_entity._
-import pgentity.pg_entity.Entities._
 
 import models.entities.User
 import models.entities.UserInstances._

@@ -7,9 +7,6 @@ import anorm._
 import anorm.SqlParser._
 
 import pgentity.pg_entity._
-import pgentity.pg_entity.Entities._
-
-import magnolia._
 
 import play.api.libs.json._
 
@@ -46,9 +43,39 @@ object ServiceInstances {
   implicit val serviceWrites = Json.writes[Service]
   implicit val completeServiceWrites = Json.writes[CompleteService]
 
-  implicit val optionStringEntity = PgEntity.columnToPgEntity[Option[String]]("text")
-  implicit val uuidEntity = PgEntity.columnToPgEntity[UUID]("uuid")
-  implicit val booleanEntity = PgEntity.columnToPgEntity[Boolean]("boolean")
-  implicit val checkEntity = PgEntity.gen[Check]
-  implicit val serviceEntity = PgEntity.gen[Service]
+  implicit val checkEntity = new PgEntity[Check] {
+    val tableName = "check"
+    val columns = List(
+      PgField("check_id", Some("uuid")), PgField("service_id", Some("uuid")),
+      PgField("secure"), PgField("path"), PgField("name")
+    )
+    def parser(prefix: String): RowParser[Check] = {
+      get[UUID](prefix + "check_id") ~
+      get[UUID](prefix + "service_id") ~
+      get[Boolean](prefix + "secure") ~
+      get[String](prefix + "path") ~
+      get[Option[String]](prefix + "name") map {
+        case id ~ service ~ secure ~ path ~ name => Check(
+          id, service, secure, path, name
+        )
+      }
+    }
+  }
+  implicit val serviceEntity = new PgEntity[Service] {
+    val tableName = "service"
+    val columns = List(
+      PgField("service_id", Some("uuid")), PgField("user_id", Some("uuid")),
+      PgField("domain"), PgField("name")
+    )
+    def parser(prefix: String): RowParser[Service] = {
+      get[UUID](prefix + "service_id") ~
+      get[UUID](prefix + "user_id") ~
+      get[String](prefix + "domain") ~
+      get[Option[String]](prefix + "name") map {
+        case id ~ user ~ domain ~ name => Service(
+          id, user, domain, name
+        )
+      }
+    }
+  }
 }
