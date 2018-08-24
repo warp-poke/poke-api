@@ -18,7 +18,8 @@ libraryDependencies ++= Seq(
   "com.github.nitram509" % "jmacaroons" % "0.3.1",
   "de.mkammerer" % "argon2-jvm" % "2.3",
   "net.cakesolutions" %% "scala-kafka-client-akka" % "1.0.0",
-  "name.delafargue" %% "anorm-pg-entity" % "0.1.0-SNAPSHOT"
+  "name.delafargue" %% "anorm-pg-entity" % "0.1.0-SNAPSHOT",
+  "com.loopfor.zookeeper" %% "zookeeper-client" % "1.4"
 )
 
 javaOptions += "-Djava.security.auth.login.config=conf/kafkacreds.jaas"
