@@ -83,17 +83,21 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     val service = Service(serviceId, userId, data.domain, data.name)
     val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.secure, check.path, check.name) })
 
+    println(insertSQL[Service](serviceEntity))
     SQL(insertSQL[Service](serviceEntity)).on(
       'service_id -> service.service_id,
       'user_id    -> service.user_id,
-      'domain     -> service.domain
+      'domain     -> service.domain,
+      'name       -> service.name
     ).execute()
 
+    println(insertSQL[Check](checkEntity))
     checks.foreach(check => SQL(insertSQL[Check](checkEntity)).on(
       'check_id   -> check.check_id,
       'service_id -> check.service_id,
       'path       -> check.path,
-      'secure     -> check.secure
+      'secure     -> check.secure,
+      'name       -> check.name
     ).execute())
 
     CompleteService(service, checks)
@@ -116,14 +120,16 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     SQL(updateSQL[Service]()(serviceEntity)).on(
       'service_id -> serviceId.toString,
       'user_id    -> userId.toString,
-      'domain     -> data.domain
+      'domain     -> data.domain,
+      'name       -> data.name
     ).execute()
 
     checks.foreach(check => SQL(insertSQL[Check](checkEntity)).on(
       'check_id   -> check.check_id,
       'service_id -> check.service_id,
       'path       -> check.path,
-      'secure     -> check.secure
+      'secure     -> check.secure,
+      'name       -> check.name
     ).execute())
 
     CompleteService(service, checks)
