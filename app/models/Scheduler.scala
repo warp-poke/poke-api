@@ -37,10 +37,12 @@ class Scheduler @Inject() (
   import Scheduler._
 
   val httpTopic = conf.get[String]("kafka.httpchecks.topic")
+  val sslTopic  = conf.get[String]("kafka.sslchecks.topic")
 
   def receive = {
     case HttpTick => httpTick()
     case AllServices(services) => handleHttpChecks(services.toList.map(_._2))
+    case SSLTick => sslTick()
   }
 
   def httpTick() = servicesState ! GetAllServices
@@ -55,8 +57,12 @@ class Scheduler @Inject() (
   def dnsTick() = {
   }
 
+  def sslTick() = {
+  }
+
 }
 
 object Scheduler {
   case object HttpTick
+  case object SSLTick
 }
