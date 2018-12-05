@@ -62,7 +62,7 @@ class Warp10 @Inject() (config: Config) {
   def deliverInternalWriteToken(duration: Duration) = {
     qte.deliverWriteToken(
       application,
-      "internal",
+      producerId.toString,
       producerId.toString,
       Map[String, String]().asJava,
       duration.toMillis,
