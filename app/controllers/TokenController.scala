@@ -36,11 +36,20 @@ class TokenController @Inject()(
     }
 
     def getInternalReadToken = internalAuthed { implicit r =>
-    val duration = 1.hours
+      val duration = 1.hours
       val token = warp10.deliverInternalReadToken(duration)
       Ok(Json.obj(
         "token" -> token,
-        "expires_at" -> ZonedDateTime.now().plusSeconds(duration.toSeconds)
+        "expires_at" -> ZonedDateTime.now.plusSeconds(duration.toSeconds)
+      ))
+    }
+
+    def getInternalWriteToken = internalAuthed { implicit r =>
+      val duration = 5.minutes
+      val token = warp10.deliverInternalWriteToken(duration)
+      Ok(Json.obj(
+        "token" -> token,
+        "expires_at" -> ZonedDateTime.now.plusSeconds(duration.toSeconds)
       ))
     }
 }
