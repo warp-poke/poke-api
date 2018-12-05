@@ -1,7 +1,8 @@
 package models
 
-import javax.inject._
 import akka.actor._
+import javax.inject._
+import models.Scheduler.Tick
 import models.entities.CompleteService
 import models.entities.Service.ServiceId
 
@@ -11,8 +12,8 @@ class ServicesAgent @Inject() () extends Actor {
   def receive = active(Map.empty)
 
   def active(services: Map[ServiceId, CompleteService]): Receive = {
-    case GetAllServices => {
-      sender ! AllServices(services)
+    case GetAllServices(tick) => {
+      sender ! AllServices(services, tick)
     }
     case SetAllServices(list) => {
       context.become(active(list.iterator.map(cs => cs.service.service_id -> cs).toMap))
@@ -31,10 +32,11 @@ class ServicesAgent @Inject() () extends Actor {
 
 object ServicesAgent {
   sealed trait ServicesAgentMessage
-  case object   GetAllServices                                                extends ServicesAgentMessage
-  case class    SetAllServices(services: Seq[CompleteService])                extends ServicesAgentMessage
-  case class    AllServices(services: Map[ServiceId, CompleteService])        extends ServicesAgentMessage
-  case class    AddService(service: CompleteService)                          extends ServicesAgentMessage
-  case class    UpdateService(service: CompleteService)                       extends ServicesAgentMessage
-  case class    RemoveService(serviceId: ServiceId)                           extends ServicesAgentMessage
+
+  case class    SetAllServices(services: Seq[CompleteService])                      extends ServicesAgentMessage
+  case class    AllServices(services: Map[ServiceId, CompleteService], tick: Tick)  extends ServicesAgentMessage
+  case class    AddService(service: CompleteService)                                extends ServicesAgentMessage
+  case class    UpdateService(service: CompleteService)                             extends ServicesAgentMessage
+  case class    RemoveService(serviceId: ServiceId)                                 extends ServicesAgentMessage
+  case class    GetAllServices(tick: Tick)                                          extends ServicesAgentMessage
 }

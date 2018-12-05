@@ -2,21 +2,20 @@ package models.repositories
 
 import java.util.UUID
 
-import javax.inject.Inject
-
-import anorm.SqlParser._
 import anorm._
-import play.api.db.DBApi
-
-import scala.concurrent.Future
-import pgentity.pg_entity._
-
-import models.entities.{Check,Service,CompleteService}
-import models.entities.User._
+import javax.inject.Inject
 import models.entities.Service._
 import models.entities.ServiceInstances._
-
+import models.entities.User._
+import models.entities.kind.HTTP
+import models.entities.{Check, CompleteService, HTTPCheckParams, Service}
 import models.http.ServiceCreationData
+import pgentity.pg_entity._
+import play.api.db.DBApi
+import play.api.libs.json.Json
+import utils.AnormTypesInstances._
+
+import scala.concurrent.Future
 
 @javax.inject.Singleton
 class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExecutionContext) {
@@ -81,7 +80,13 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
   def create(userId: UserId, data: ServiceCreationData): Future[CompleteService] = Future(db.withTransaction { implicit connection =>
     val serviceId = UUID.randomUUID()
     val service = Service(serviceId, userId, data.domain, data.name)
-    val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.secure, check.path, check.name) })
+    val checks = data.checks.map({ check => {
+      val params = check.kind match {
+        case HTTP => Some(HTTPCheckParams(check.secure.getOrElse(true), check.path.getOrElse("/")))
+        case _ => None
+      }
+      Check(UUID.randomUUID(), serviceId, check.name, check.kind, params)
+    }})
 
     println(insertSQL[Service](serviceEntity))
     SQL(insertSQL[Service](serviceEntity)).on(
@@ -95,9 +100,9 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     checks.foreach(check => SQL(insertSQL[Check](checkEntity)).on(
       'check_id   -> check.check_id,
       'service_id -> check.service_id,
-      'path       -> check.path,
-      'secure     -> check.secure,
-      'name       -> check.name
+      'kind       -> check.kind,
+      'name       -> check.name,
+      'params     -> Json.toJson(check.params)
     ).execute())
 
     CompleteService(service, checks)
@@ -105,7 +110,14 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
 
   def update(userId: UserId, serviceId: ServiceId, data: ServiceCreationData): Future[CompleteService] = Future(db.withTransaction { implicit connection =>
     val service = Service(serviceId, userId, data.domain, data.name)
-    val checks = data.checks.map({ check => Check(UUID.randomUUID(), serviceId, check.secure, check.path, check.name) })
+    val checks = data.checks.map({ check => {
+      val params = check.kind match {
+        case HTTP => Some(HTTPCheckParams(check.secure.getOrElse(true), check.path.getOrElse("/")))
+        case _ => None
+      }
+      Check(UUID.randomUUID(), serviceId, check.name, check.kind, params)
+    }})
+
     val deleteChecksQuery = s"""
       delete from "${tableName[Check]}"
       where service_id = {serviceId}::uuid
@@ -127,9 +139,9 @@ class ServiceRepository @Inject()(dbapi: DBApi)(implicit ec: models.DatabaseExec
     checks.foreach(check => SQL(insertSQL[Check](checkEntity)).on(
       'check_id   -> check.check_id,
       'service_id -> check.service_id,
-      'path       -> check.path,
-      'secure     -> check.secure,
-      'name       -> check.name
+      'kind       -> check.kind,
+      'name       -> check.name,
+      'params     -> Json.toJson(check.params)
     ).execute())
 
     CompleteService(service, checks)

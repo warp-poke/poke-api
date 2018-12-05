@@ -27,6 +27,12 @@ case class SSLOrder(
   token: String
 ) extends Order
 
+case class ICMPOrder(
+ domain_name: String,
+ warp10_endpoint: String,
+ token: String
+) extends Order
+
 object Order {
   val httpOrderFormat = Json.format[HttpOrder]
   val dnsOrderFormat = Json.format[DNSOrder]
