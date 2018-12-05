@@ -7,6 +7,7 @@ POST    /register                   controllers.AuthController.register
 GET     /token                      controllers.TokenController.getReadToken
 
 GET     /internal/readtoken            controllers.TokenController.getInternalReadToken
+GET     /internal/writetoken            controllers.TokenController.getInternalWriteToken
 GET     /internal/users/:user_id/hooks controllers.HookController.listHooksInternalAuth(user_id: UserId)
 
 GET     /users/:user_id/hooks       controllers.HookController.listHooks(user_id: UserId)
