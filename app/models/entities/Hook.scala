@@ -15,11 +15,11 @@ object hook_kind {
   sealed trait HookKind {
     def name = this.toString.toUpperCase
   }
-  case object SLACK_INCOMING_WEBHOOK extends HookKind
+  case object SLACK_WEBHOOK extends HookKind
 
   object HookKind {
     val values = List(
-      SLACK_INCOMING_WEBHOOK
+      SLACK_WEBHOOK
     )
     def apply(s: String) = values.find(_.name == s.toUpperCase)
   }
@@ -48,7 +48,12 @@ case class Hook(
   label: String,
   kind: hook_kind.HookKind,
   webhook: String
-)
+) {
+  val template = kind match {
+    case SLACK_WEBHOOK => """{"text": "$$BODY$$"}"""
+    case _ => "Error: this kind is not defined."
+  }
+}
 
 object Hook {
   type HookId = UUID
@@ -65,16 +70,18 @@ object HookInstances {
       PgField("user_id"),
       PgField("label"),
       PgField("kind"),
-      PgField("webhook")
+      PgField("webhook"),
+      PgField("template")
     )
     def parser(prefix: String): RowParser[Hook] = {
       get[UUID](prefix + "hook_id") ~
       get[UUID](prefix + "user_id") ~
       get[String](prefix + "label") ~
       get[hook_kind.HookKind](prefix + "kind") ~
-      get[String](prefix + "webhook") map {
-        case hook_id ~ user_id ~ label ~ kind ~ webhook => {
-          Hook(hook_id, user_id, label, kind, webhook)
+      get[String](prefix + "webhook") ~
+      get[String](prefix + "template") map {
+        case hook_id ~ user_id ~ label ~ kind ~ webhook ~ template => {
+          Hook(hook_id, user_id, label, kind, webhook, template)
         }
       }
     }
