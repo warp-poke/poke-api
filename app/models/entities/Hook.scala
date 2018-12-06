@@ -12,7 +12,7 @@ import pgentity.pg_entity._
 import models.enums._
 
 object hook_kind {
- sealed trait HookKind {
+  sealed trait HookKind {
     def name = this.toString.toUpperCase
   }
   case object SLACK_INCOMING_WEBHOOK extends HookKind
