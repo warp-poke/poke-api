@@ -23,13 +23,14 @@ class HookRepository @Inject()(dbapi: DBApi)(implicit val ec: models.DatabaseExe
   private val db = dbapi.database("default")
 
   def create(hook: HookInput): Future[Hook] = Future(db.withConnection { implicit connection =>
-    val createdHook = Hook(UUID.randomUUID, hook.user_id, hook.label, hook.webhook)
+    val createdHook = Hook(UUID.randomUUID, hook.user_id, hook.label, hook.kind, hook.webhook)
 
     SQL(insertSQL[Hook])
       .on(
         'hook_id -> createdHook.hook_id,
         'user_id -> createdHook.user_id,
         'label -> createdHook.label,
+        'kind -> createdHook.kind,
         'webhook -> createdHook.webhook
       )
       .execute()
@@ -38,14 +39,15 @@ class HookRepository @Inject()(dbapi: DBApi)(implicit val ec: models.DatabaseExe
   })
 
   def patch(hook_id: HookId, hook: HookInput): Future[Hook] = Future(db.withConnection { implicit connection =>
-    SQL(updateSQL[Hook](ignored = List("user_id")) + " label = {label}, webhook = {webhook}")
+    SQL(updateSQL[Hook](ignored = List("user_id")) + " label = {label}, kind = {kind}, webhook = {webhook}")
       .on(
         'label -> hook.label,
+        'kind -> hook.kind,
         'webhook -> hook.webhook
       )
       .execute()
 
-    Hook(hook_id, hook.user_id, hook.label, hook.webhook)
+    Hook(hook_id, hook.user_id, hook.label, hook.kind, hook.webhook)
   })
 
   def getHooksByUserId(user_id: UserId): Future[List[Hook]] = Future(db.withConnection { implicit connection =>
