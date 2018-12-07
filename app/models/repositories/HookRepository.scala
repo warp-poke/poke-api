@@ -31,8 +31,7 @@ class HookRepository @Inject()(dbapi: DBApi)(implicit val ec: models.DatabaseExe
         'user_id -> createdHook.user_id,
         'label -> createdHook.label,
         'kind -> createdHook.kind,
-        'webhook -> createdHook.webhook,
-        'template -> createdHook.template
+        'webhook -> createdHook.webhook
       )
       .execute()
 
@@ -44,8 +43,7 @@ class HookRepository @Inject()(dbapi: DBApi)(implicit val ec: models.DatabaseExe
       .on(
         'label -> hook.label,
         'kind -> hook.kind,
-        'webhook -> hook.webhook,
-        'template -> hook.template
+        'webhook -> hook.webhook
       )
       .execute()
 

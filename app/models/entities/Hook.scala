@@ -49,6 +49,8 @@ case class Hook(
   kind: hook_kind.HookKind,
   webhook: String
 ) {
+  import hook_kind._
+
   val template = kind match {
     case SLACK_WEBHOOK => """{"text": "$$BODY$$"}"""
     case _ => "Error: this kind is not defined."
@@ -70,18 +72,16 @@ object HookInstances {
       PgField("user_id"),
       PgField("label"),
       PgField("kind"),
-      PgField("webhook"),
-      PgField("template")
+      PgField("webhook")
     )
     def parser(prefix: String): RowParser[Hook] = {
       get[UUID](prefix + "hook_id") ~
       get[UUID](prefix + "user_id") ~
       get[String](prefix + "label") ~
       get[hook_kind.HookKind](prefix + "kind") ~
-      get[String](prefix + "webhook") ~
-      get[String](prefix + "template") map {
-        case hook_id ~ user_id ~ label ~ kind ~ webhook ~ template => {
-          Hook(hook_id, user_id, label, kind, webhook, template)
+      get[String](prefix + "webhook") map {
+        case hook_id ~ user_id ~ label ~ kind ~ webhook => {
+          Hook(hook_id, user_id, label, kind, webhook)
         }
       }
     }
