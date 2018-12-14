@@ -25,19 +25,19 @@ object Scheduler {
     def kind: Kind
   }
 
-  case class HTTPTick() extends Tick {
+  case object HTTPTick extends Tick {
     val kind = HTTP
   }
 
-  case class SSLTick() extends Tick {
+  case object SSLTick extends Tick {
     val kind = SSL
   }
 
-  case class DNSTick() extends Tick {
+  case object DNSTick extends Tick {
     val kind = DNS
   }
 
-  case class ICMPTick() extends Tick {
+  case object ICMPTick extends Tick {
     val kind = ICMP
   }
 }
@@ -71,19 +71,19 @@ class Scheduler @Inject() (
     val orders = services.flatMap(service => or.getOrders(service, tick.kind))
 
     tick match {
-      case _: HTTPTick => {
+      case HTTPTick => {
         val buckets = Scheduler.bucketize(orders, Math.floor(httpInterval * 0.9).toInt)
         schedulingActor ! OrderBuckets(buckets, httpTopic, 1.second)
       }
-      case _: SSLTick => {
+      case SSLTick => {
         val buckets = Scheduler.bucketize(orders, Math.floor(sslInterval * 0.9).toInt)
         schedulingActor ! OrderBuckets(buckets, sslTopic, 1.second)
       }
-      case _: DNSTick => {
+      case DNSTick => {
         val buckets = Scheduler.bucketize(orders, Math.floor(dnsInterval * 0.9).toInt)
         schedulingActor ! OrderBuckets(buckets, dnsTopic, 1.second)
       }
-      case _: ICMPTick => {
+      case ICMPTick => {
         val buckets = Scheduler.bucketize(orders, Math.floor(icmpInterval * 0.9).toInt)
         schedulingActor ! OrderBuckets(buckets, icmpTopic, 1.second)
       }
