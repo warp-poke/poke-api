@@ -22,7 +22,14 @@
 | WARP_AES_TOKEN            | Hexadecimal key of the Warp 10 instance                                                  | `Hex`     |
 | WARP_ENDPOINT             | URL of the Warp 10 instance                                                              | `URL`     |
 | KAFKA_HOST                | Host of the kafka instance with optionnaly a port                                        | `String`  |
-| KAFKA_HTTPCHECKS_TOPIC    | Topic of the HTTP check                                                                  | `String`  |
+| KAFKA_HTTPCHECKS_TOPIC    | Topic of the HTTP checks                                                                 | `String`  |
+| KAFKA_HTTPCHECKS_INTERVAL | Interval to treat message batching                                                       | `String`  |
+| KAFKA_SSLCHECKS_TOPIC     | Topic of the SSL checks                                                                  | `String`  |
+| KAFKA_SSLCHECKS_INTERVAL  | Interval to treat message batching                                                       | `String`  |
+| KAFKA_DNSCHECKS_TOPIC     | Topic of the DNS checks                                                                  | `String`  |
+| KAFKA_DNSCHECKS_INTERVAL  | Interval to treat message batching                                                       | `String`  |
+| KAFKA_ICMPCHECKS_TOPIC    | Topic of the ICMP checks                                                                 | `String`  |
+| KAFKA_ICMPCHECKS_INTERVAL | Interval to treat message batching                                                       | `String`  |
 | KAFKA_ENDPOINT            | Kafka endpoint                                                                           | `String`  |
 | KAFKA_WRITER_USER         | Kafka user with writing permission                                                       | `String`  |
 | KAFKA_WRITER_PASSWORD     | Password of the kafka permission                                                         | `String`  |

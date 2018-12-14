@@ -1,15 +1,13 @@
 package models.entities
 
-import java.time.OffsetDateTime
 import java.util.UUID
 
-import play.api.libs.json._
-
-import anorm._
 import anorm.SqlParser._
-import pgentity.pg_entity._
-
+import anorm._
+import models.entities.hook_kind.SLACK_WEBHOOK
 import models.enums._
+import pgentity.pg_entity._
+import play.api.libs.json._
 
 object hook_kind {
   sealed trait HookKind {
@@ -39,7 +37,8 @@ case class HookInput(
   user_id: User.UserId,
   label: String,
   kind: hook_kind.HookKind,
-  webhook: String
+  webhook: String,
+  template: String
 )
 
 case class Hook(
@@ -47,7 +46,7 @@ case class Hook(
   user_id: User.UserId,
   label: String,
   kind: hook_kind.HookKind,
-  webhook: String
+  webhook: String,
 ) {
   import hook_kind._
 
@@ -79,8 +78,9 @@ object HookInstances {
       get[UUID](prefix + "user_id") ~
       get[String](prefix + "label") ~
       get[hook_kind.HookKind](prefix + "kind") ~
-      get[String](prefix + "webhook") map {
-        case hook_id ~ user_id ~ label ~ kind ~ webhook => {
+      get[String](prefix + "webhook") ~
+      get[String](prefix + "template") map {
+        case hook_id ~ user_id ~ label ~ kind ~ webhook ~ _ => {
           Hook(hook_id, user_id, label, kind, webhook)
         }
       }
