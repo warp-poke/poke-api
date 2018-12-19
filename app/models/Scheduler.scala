@@ -3,7 +3,13 @@ package models
 import akka.actor.{Actor, ActorRef, ActorSystem}
 import javax.inject._
 import models.Scheduler._
-import models.ServicesAgent._
+import scala.concurrent.duration._
+import play.api.libs.json._
+import play.api.Configuration
+import org.apache.kafka.common.serialization.StringSerializer
+import models.repositories.ServiceRepository
+import models.StateAgent._
+import models.entities.CompleteService
 import models.entities.ActorMessages._
 import models.entities.CompleteService
 import models.entities.kind._
@@ -48,7 +54,7 @@ class Scheduler @Inject() (
   or: OrderService,
   actorSystem: ActorSystem,
   conf: Configuration,
-  @Named("services-state") servicesState: ActorRef,
+  @Named("globalstate") globalState: ActorRef,
   @Named("scheduling-actor") schedulingActor: ActorRef
 )(implicit ec: ExecutionContext) extends Actor {
 
@@ -63,7 +69,7 @@ class Scheduler @Inject() (
   val icmpInterval = conf.get[Int]("kafka.icmpchecks.interval")
 
   def receive = {
-    case tick: Tick => servicesState ! GetAllServices(tick)
+    case tick: Tick => globalState ! GetAllServices(tick)
     case AllServices(services, tick) => handleChecks(services.toList.map(_._2), tick)
   }
 

@@ -16,14 +16,14 @@ import models.http.ServiceCreationData
 import models.http.ServiceCreationDataInstances._
 
 import models.repositories.ServiceRepository
-import models.ServicesAgent._
+import models.StateAgent._
 
 @Singleton
 class ServiceController @Inject()(
   authed: Authenticated,
   serviceRepo: ServiceRepository,
   cc: ControllerComponents,
-  @Named("services-state") servicesState: ActorRef
+  @Named("globalstate") globalState: ActorRef
   )(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
     def listServices = authed.async { r =>
@@ -39,7 +39,7 @@ class ServiceController @Inject()(
       serviceRepo
         .create(request.auth.userId, request.body)
         .map({ cs =>
-          servicesState ! AddService(cs)
+          globalState ! AddService(cs)
           Created(Json.toJson(cs))
         })
     }
@@ -63,7 +63,7 @@ class ServiceController @Inject()(
       serviceRepo
         .delete(id, request.auth.userId)
         .map(_ => {
-          servicesState ! RemoveService(id)
+          globalState ! RemoveService(id)
           NoContent
         })
     }

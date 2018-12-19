@@ -7,6 +7,8 @@
 | Name                      | Description                                                                              | Type      |
 | ------------------------- | ---------------------------------------------------------------------------------------- | --------- |
 | SCHEDULER_ENABLED         | Enable the scheduler in order to send events in kafka                                    | `Boolean` |
+| SHARDING_ENABLED          | Enable sharding, allows to start multiple instances with scheduling enabled              | `Boolean` |
+| SHARDING_NBSHARDS         | Set the number of shards, must be a power of two                                         | `Number`  |
 | APP_SECRET                | Application secret                                                                       | `String`  |
 | MACAROONS_SECRET          | Macaroon secret                                                                          | `String`  |
 | JAAS_PATH                 | Path to the `.jaas` file containing kafka credentials                                    | `String`  |
@@ -34,6 +36,7 @@
 | KAFKA_WRITER_USER         | Kafka user with writing permission                                                       | `String`  |
 | KAFKA_WRITER_PASSWORD     | Password of the kafka permission                                                         | `String`  |
 | KAFKA_SECURITY_PROTOCOL   | Kafka security protocol which can be `PLAINTEXT`, `SASL_PLAINTEXT`, `SASL_SSL` and `SSL` | `String`  |
+| ZOOKEEPER_SERVERS         | Zookeeper connection string (e.g. 192.168.0.1:2181,192.168.0.2:2181,192.168.0.3:2181)    | `String`  |
 
 ## Usage
 
@@ -54,6 +57,18 @@ Now, you are ready to run it in production using the following command:
 ```bash
 ./target/universal/stage/bin/poke-api
 ```
+
+## Sharding
+
+If you want to start multiples instances with the scheduler enabled, you must enable sharding.
+
+Set `SHARDING_ENABLED` to `true` and `SHARDING_NBSHARDS` to a power of two.
+
+The number of shards must be at least as big as the number of instances you want to start.
+
+That being said, changing the number of shards is not trivial; you would have to either stop all scheduler instances or have checks being scheduled at least twice during the change.
+
+It's better to choose a "big enough" number, in case you want to add more instances later.
 
 ## Development
 

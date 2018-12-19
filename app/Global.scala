@@ -6,19 +6,21 @@ import com.google.inject.AbstractModule
 import javax.inject._
 import models.Scheduler.{DNSTick, HTTPTick, ICMPTick, SSLTick}
 import models.repositories.ServiceRepository
-import models.{Scheduler, ServicesAgent}
+import models.{Scheduler, StateAgent}
 import play.api._
 import play.api.libs.concurrent.AkkaGuiceSupport
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import models.StateAgent
+import models.LockManager
 
 @Singleton
 class Global @Inject() (
   app: Application,
   actorSystem: ActorSystem,
   conf: Configuration,
-  @Named("services-state") servicesState: ActorRef,
+  @Named("globalstate") globalState: ActorRef,
   @Named("scheduler") scheduler: ActorRef,
   serviceRepo: ServiceRepository
   )(implicit ec: ExecutionContext) {
@@ -30,7 +32,7 @@ class Global @Inject() (
 
   Logger.info("ON START")
   actorSystem.scheduler.schedule(1.seconds, 30.minutes) {
-    serviceRepo.listAll map { services => servicesState ! ServicesAgent.SetAllServices(services) }
+    serviceRepo.listAll map { services => globalState ! StateAgent.SetAllServices(services) }
   }
 
   if(conf.get[Boolean]("scheduler.enabled")) {
@@ -52,10 +54,11 @@ class Global @Inject() (
 
 class GlobalModule extends AbstractModule with AkkaGuiceSupport {
   def configure() = {
-    bindActor[ServicesAgent]("services-state")
+    bindActor[StateAgent]("globalstate")
     bindActor[Scheduler]("scheduler")
     bindActor[SchedulingActor]("scheduling-actor")
     bindActor[KafkaProducerActor]("kafka-producer")
+    bind(classOf[LockManager]).asEagerSingleton
     bind(classOf[Global]).asEagerSingleton
   }
 }
