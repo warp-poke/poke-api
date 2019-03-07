@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
   "com.github.nitram509" % "jmacaroons" % "0.3.1",
   "de.mkammerer" % "argon2-jvm" % "2.3",
   "net.cakesolutions" %% "scala-kafka-client-akka" % "1.0.0",
-  "name.delafargue" %% "anorm-pg-entity" % "0.1.0-SNAPSHOT",
+  "name.delafargue" %% "anormpgentity" % "0.1.0",
   "com.loopfor.zookeeper" %% "zookeeper-client" % "1.4"
 )
 
@@ -40,4 +40,4 @@ play.sbt.routes.RoutesKeys.routesImport += "models.entities.Hook._"
 resolvers += "cityzendata-bintray" at "http://dl.bintray.com/cityzendata/maven"
 resolvers += "hbs-bintray" at "http://dl.bintray.com/hbs/maven"
 resolvers += Resolver.bintrayRepo("cakesolutions", "maven")
-resolvers += "Clever Cloud Maven" at "http://maven.clever-cloud.com"
+resolvers += Resolver.bintrayRepo("clevercloud", "maven")
