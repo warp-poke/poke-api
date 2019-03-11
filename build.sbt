@@ -1,7 +1,7 @@
 name := """poke-api"""
 organization := "com.clever-cloud"
 
-version := "1.0-SNAPSHOT"
+version := "1.0"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
