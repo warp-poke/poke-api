@@ -15,6 +15,8 @@ import models.entities.CompleteService
 import models.entities.kind._
 import models.repositories.ServiceRepository
 import play.api.Configuration
+import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -78,18 +80,22 @@ class Scheduler @Inject() (
 
     tick match {
       case HTTPTick => {
+        Kamon.gauge("scheduler_http_checks").increment()
         val buckets = Scheduler.bucketize(orders, Math.floor(httpInterval * 0.9).toInt)
         schedulingActor ! OrderBuckets(buckets, httpTopic, 1.second)
       }
       case SSLTick => {
+        Kamon.gauge("scheduler_ssl_checks").increment()
         val buckets = Scheduler.bucketize(orders, Math.floor(sslInterval * 0.9).toInt)
         schedulingActor ! OrderBuckets(buckets, sslTopic, 1.second)
       }
       case DNSTick => {
+        Kamon.gauge("scheduler_dns_checks").increment()
         val buckets = Scheduler.bucketize(orders, Math.floor(dnsInterval * 0.9).toInt)
         schedulingActor ! OrderBuckets(buckets, dnsTopic, 1.second)
       }
       case ICMPTick => {
+        Kamon.gauge("scheduler_icmp_checks").increment()
         val buckets = Scheduler.bucketize(orders, Math.floor(icmpInterval * 0.9).toInt)
         schedulingActor ! OrderBuckets(buckets, icmpTopic, 1.second)
       }

@@ -1,6 +1,8 @@
 package models.orders
 
 import play.api.libs.json._
+import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
 
 sealed trait Order {
   def domain_name: String
