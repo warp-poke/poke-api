@@ -19,7 +19,8 @@ libraryDependencies ++= Seq(
   "de.mkammerer" % "argon2-jvm" % "2.3",
   "net.cakesolutions" %% "scala-kafka-client-akka" % "1.0.0",
   "name.delafargue" %% "anormpgentity" % "0.1.0",
-  "com.loopfor.zookeeper" %% "zookeeper-client" % "1.4"
+  "com.loopfor.zookeeper" %% "zookeeper-client" % "1.4",
+  "io.kamon" %% "kamon-prometheus" % "1.1.1"
 )
 
 javaOptions += "-Djava.security.auth.login.config=conf/kafkacreds.jaas"

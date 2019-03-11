@@ -9,6 +9,8 @@ import cakesolutions.kafka.KafkaProducer.Conf
 import cakesolutions.kafka.KafkaProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import models.entities.ActorMessages._
+import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
 import models.orders.Order // TODO: remove me
 
 class KafkaProducerActor @Inject() (
@@ -30,6 +32,7 @@ class KafkaProducerActor @Inject() (
   ))
 
   def send(order: Order, topic: String): Unit = {
+    Kamon.gauge("scheduler_kafka_producer_send").increment()
     producer.send(KafkaProducerRecord[String, String](
       topic,
       Json.toJson(order).toString

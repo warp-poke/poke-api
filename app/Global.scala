@@ -14,6 +14,10 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import models.StateAgent
 import models.LockManager
+import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
+
+
 
 @Singleton
 class Global @Inject() (
@@ -29,6 +33,17 @@ class Global @Inject() (
   val sslInterval = conf.get[Int]("kafka.sslchecks.interval")
   val dnsInterval = conf.get[Int]("kafka.dnschecks.interval")
   val icmpInterval = conf.get[Int]("kafka.icmpchecks.interval")
+
+  Kamon.addReporter(new PrometheusReporter())
+  Kamon.gauge("scheduler_http_checks").set(0)
+  Kamon.gauge("scheduler_ssl_checks").set(0)
+  Kamon.gauge("scheduler_dns_checks").set(0)
+  Kamon.gauge("scheduler_icmp_checks").set(0)
+  Kamon.gauge("scheduler_kafka_producer_send").set(0)
+  Kamon.gauge("scheduler_http_orders").set(0)
+  Kamon.gauge("scheduler_ssl_orders").set(0)
+  Kamon.gauge("scheduler_dns_orders").set(0)
+  Kamon.gauge("scheduler_icmp_orders").set(0)
 
   Logger.info("ON START")
   actorSystem.scheduler.schedule(1.seconds, 30.minutes) {

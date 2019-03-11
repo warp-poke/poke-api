@@ -5,6 +5,8 @@ import javax.inject._
 import models.entities._
 import models.entities.kind._
 import models.orders._
+import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
 
 
 class OrderService @Inject() (config: Config, warp10: Warp10) {
@@ -25,6 +27,7 @@ class OrderService @Inject() (config: Config, warp10: Warp10) {
     val token = warp10.deliverWriteToken(labels, service.user_id)
     check.kind match {
       case HTTP => {
+        Kamon.gauge("scheduler_http_orders").increment()
         val params = check.params match {
           case Some(x: HTTPCheckParams) => x
           case _ => HTTPCheckParams(true, "/")
@@ -39,6 +42,7 @@ class OrderService @Inject() (config: Config, warp10: Warp10) {
         )
       }
       case SSL => {
+        Kamon.gauge("scheduler_ssl_orders").increment()
         SSLOrder(
           domain_name = service.domain,
           warp10_endpoint = config.warp10.endpoint,
@@ -46,6 +50,7 @@ class OrderService @Inject() (config: Config, warp10: Warp10) {
         )
       }
       case DNS => {
+        Kamon.gauge("scheduler_dns_orders").increment()
         DNSOrder(
           domain_name = service.domain,
           warp10_endpoint = config.warp10.endpoint,
@@ -53,6 +58,7 @@ class OrderService @Inject() (config: Config, warp10: Warp10) {
         )
       }
       case ICMP => {
+        Kamon.gauge("scheduler_icmp_orders").increment()
         ICMPOrder(
           domain_name = service.domain,
           warp10_endpoint = config.warp10.endpoint,
